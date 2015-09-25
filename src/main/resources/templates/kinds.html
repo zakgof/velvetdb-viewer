@@ -15,12 +15,15 @@
 		
 	<body>
 	
-		<h1>Hello</h1>
+		<h1>Kinds</h1>
 		<table class="pure-table pure-table-bordered">
-			<tr>
-				<td>One1</td>
+				
+			<tr th:each="kind : ${kinds}">
+				<td><a href="/kind" th:text="${kind}" th:href="${kind}">template</a></td>		
 			</tr>
+		
 		</table>
+		
 	
 	</body>
 </html>

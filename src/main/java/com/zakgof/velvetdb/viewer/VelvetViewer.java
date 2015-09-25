@@ -9,8 +9,9 @@ public class VelvetViewer {
   
   public static Injector start(String velvetUri, ViewerDataModel model) {
     Injector injector = Guice.createInjector(binder -> {
-      binder.bind(VelvetViewerService.class).toInstance(new VelvetViewerService(model));
+      binder.bind(VelvetViewerService.class);
       binder.bind(MainController.class);
+      binder.bind(ViewerDataModel.class).toInstance(model);
     }, new VelvetTransactionModule(velvetUri));    
     injector.getInstance(MainController.class);
     return injector;

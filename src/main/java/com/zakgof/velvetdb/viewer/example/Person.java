@@ -1,9 +1,11 @@
 package com.zakgof.velvetdb.viewer.example;
 
+import java.io.Serializable;
+
 import com.zakgof.db.velvet.annotation.Keyless;
 
 @Keyless
-public class Person {
+public class Person implements Serializable {
 
   private String firstName;
   

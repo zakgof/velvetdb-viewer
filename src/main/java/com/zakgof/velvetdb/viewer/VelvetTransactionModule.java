@@ -5,13 +5,12 @@ import static com.google.inject.matcher.Matchers.any;
 
 import javax.transaction.Transactional;
 
-import com.google.inject.Binder;
-import com.google.inject.Module;
+import com.google.inject.AbstractModule;
 import com.zakgof.db.velvet.IVelvet;
 import com.zakgof.db.velvet.IVelvetEnvironment;
 import com.zakgof.db.velvet.VelvetFactory;
 
-public class VelvetTransactionModule implements Module {
+public class VelvetTransactionModule extends AbstractModule {
   
   private IVelvetEnvironment velvetEnvironment;
   private ThreadLocal<IVelvet> velvetTL = new ThreadLocal<>();
@@ -21,12 +20,11 @@ public class VelvetTransactionModule implements Module {
   }
 
   @Override
-  public void configure(Binder binder) {
+  public void configure() {
     
-    binder.bind(IVelvet.class).toProvider(() -> getVelvet());
-    binder.bind(IVelvetEnvironment.class).toInstance(velvetEnvironment);
-    
-    binder.bindInterceptor(annotatedWith(Transactional.class), any(), methodInvocation -> {
+    bind(IVelvet.class).toProvider(() -> getVelvet());
+    bind(IVelvetEnvironment.class).toInstance(velvetEnvironment);
+    bindInterceptor(any(), annotatedWith(Transactional.class), methodInvocation -> {
       Object[] result = new Object[1];
       try {
         velvetEnvironment.execute(velvet -> {

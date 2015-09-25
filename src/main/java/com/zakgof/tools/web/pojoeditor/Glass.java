@@ -37,10 +37,16 @@ public class Glass<K, V> {
         map(field -> new FieldInfo(field)).
         collect(Collectors.toMap(FieldInfo::getName, o -> o, (u,v)->u, LinkedHashMap::new));
     
-    this.keyField = reflectionFields.stream().filter(f -> f.getAnnotation(Key.class) != null ||  f.getAnnotation(SortedKey.class) != null) .findFirst().get(); // TODO: key getter ??
-    this.keyFieldName = keyField.getName();
+//    if (entity instanceof AnnoEntityDef) {
+//      String keyFieldName = 
+//    }
+
+    // TODO
+    this.keyField = reflectionFields.stream().filter(f -> f.getAnnotation(Key.class) != null ||  f.getAnnotation(SortedKey.class) != null) .findFirst().orElse(null);
+    this.keyFieldName = keyField == null ? "#key" : keyField.getName();
   }
   
+  // TODO property fetcher
   private List<Field> getFields(Class<?> type) {    
     List<Field> fields = Arrays.stream(type.getDeclaredFields()).
       filter(field -> (field.getModifiers() & (Modifier.TRANSIENT | Modifier.STATIC)) == 0).

@@ -29,10 +29,12 @@ public class VelvetViewerService {
 
   @Inject
   private Provider<IVelvet> velvetProvider;
+  
+  @Inject
   private ViewerDataModel model;
-
-  public VelvetViewerService(ViewerDataModel model) {
-    this.model = model;
+  
+  public ViewerDataModel getModel() {
+    return model;
   }
 
   @Transactional

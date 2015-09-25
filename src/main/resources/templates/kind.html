@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description"
+			content="Start your next web project with Pure." />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<title>Get Started &ndash; Pure</title>
+		
+		<link rel="stylesheet"
+			href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />	
+	</head>
+		
+	<body>
+	
+			
+		<h4><a href="${it.rootUrl}">All Kinds</a> &gt; ${it.kind} </h4>
+
+		<table class="pure-table pure-table-bordered">
+
+		<tr>
+			<td>[<span th:text="${keyField}"/>]</td>			
+			<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${field}"/></td>
+		</tr>
+		
+		<!--
+	
+	<c:forEach var="row" items="${it.rows}">
+		<tr>
+			<td><a href="${it.baseEditUrl}/<c:out value="${row[it.keyField].value}"/>"><c:out value="${row[it.keyField].value}"/></a></td>
+			<c:forEach var="field" items="${it.fields}">
+				<c:if test="${!field.equals(it.keyField)}" >
+				  <td><c:out value="${row[field].editor.view(row[field].value)}"/></td>
+				</c:if>				
+			</c:forEach>
+		</tr>
+	</c:forEach>
+	
+	-->
+
+</table>
+
+<p>New record </p>
+<form method="post" action="${it.newRecordUrl}" enctype="application/x-www-form-urlencoded" >
+${it.keyField} <input type="text" name="key" />
+<input type="submit" value="save" />
+</form>
+		
+	
+	</body>
+</html>

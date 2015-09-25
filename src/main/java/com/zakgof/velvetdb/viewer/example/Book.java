@@ -1,8 +1,11 @@
 package com.zakgof.velvetdb.viewer.example;
 
+import java.io.Serializable;
+
 import com.zakgof.db.velvet.annotation.SortedKey;
 
-public class Book {
+@SuppressWarnings("serial")
+public class Book implements Serializable {
   
   @SortedKey
   private String isbn;
