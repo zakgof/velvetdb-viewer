@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.zakgof.db.velvet.entity.IEntityDef;
-import com.zakgof.db.velvet.entity.IProperty;
-import com.zakgof.db.velvet.entity.IPropertyAccessor;
+import com.zakgof.db.velvet.properties.IProperty;
+import com.zakgof.db.velvet.properties.IPropertyAccessor;
 import com.zakgof.tools.web.IField;
 
 public class Glass<K, V> {

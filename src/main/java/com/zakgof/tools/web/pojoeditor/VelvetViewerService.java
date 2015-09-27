@@ -46,8 +46,7 @@ public class VelvetViewerService {
     
   private <K, V> Map<String, Object> edit(ViewerDataModel model, String kind, String key, IEntityDef<K, V> entity) {
     Glass<K, V> glass = Glass.of(entity);
-    
-    Object value = glass.fetchValueFromStringKey(velvetProvider.get(), key);
+    V value = entity.get(velvetProvider.get(), glass.keyToNative(key));
 
     List<Map<String, ?>> multiLinkData = model.multiLinks(kind).stream().map(
        link -> ImmutableMap.<String, Object>builder().
@@ -68,7 +67,7 @@ public class VelvetViewerService {
        "value", childData(link, value))
       ).collect(Collectors.toList());
 
-    Map<FieldInfo, ?> fields = glass.fields().collect(Collectors.toMap(f -> f, f ->
+    Map<IField<?, V>> fields = glass.fields().collect(Collectors.toMap(f -> f, f ->
       ImmutableMap.<String, Object>of(
         "value", f.getValue(value),
         "editor", model == null ? ViewerDataModel.getDefaultEditor(f.getType()) : model.editor(f)
