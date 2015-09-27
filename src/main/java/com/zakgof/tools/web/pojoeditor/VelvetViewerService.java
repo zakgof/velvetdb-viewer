@@ -23,6 +23,7 @@ import com.zakgof.db.velvet.link.ILinkDef;
 import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
 import com.zakgof.tools.web.FieldInfo;
+import com.zakgof.tools.web.IField;
 
 @Singleton
 public class VelvetViewerService {
@@ -170,7 +171,7 @@ public class VelvetViewerService {
      Glass<K, V> glass = Glass.of(entity);
      
 
-    List<FieldInfo> fields = glass.fields().collect(Collectors.toList());
+    List<IField<?, V>> fields = glass.fields().collect(Collectors.toList());
     List<Map<String, ?>> rows = 
         
         objects.stream()
@@ -191,7 +192,7 @@ public class VelvetViewerService {
       return jspmodel;
     }
 
-  private Map<String, ?> fieldMap(Object obj, List<FieldInfo> fields, ViewerDataModel model) {
+  private Map<String, ?> fieldMap(Object obj, List<IField<?, ?>> fields, ViewerDataModel model) {
     return fields.stream().collect(Collectors.toMap(FieldInfo::getName, f ->
       ImmutableMap.<String, Object>of(
                 "value", f.getValue(obj),
@@ -270,7 +271,7 @@ public class VelvetViewerService {
   
   private <K, V> String submitNew(ViewerDataModel model, IEntityDef<K, V> entity , String key, String linkHostKey, String linkEdgeKind) {
     Glass<K, V> glass = Glass.of(entity);
-    Object objectKey = persistNewObject(key, glass, entity);
+    K objectKey = persistNewObject(key, glass, entity);
     if (linkHostKey != null) {
       attachToParentHost(model, linkHostKey, linkEdgeKind, objectKey);
     }
