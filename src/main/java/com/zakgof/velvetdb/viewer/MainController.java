@@ -33,9 +33,15 @@ public class MainController {
       return new ModelAndView(ImmutableMap.of("kinds", kinds), "kinds");
     } , engine);
     
-    get("/:kind", (request, response) -> {
+    get("/kind/:kind", (request, response) -> {
       String kind = request.params("kind");
-      Map<String, Object> model = service.kindTable(kind);
+      Map<String, Object> model = service.kindTable(kind, 0, 100);
+      return new ModelAndView(model, "kind");
+    } , engine);
+    
+    get("/kind/:kind/:offset/:limit", (request, response) -> {
+      String kind = request.params("kind");
+      Map<String, Object> model = service.kindTable(kind, Integer.parseInt(request.params("offset")), Integer.parseInt(request.params("limit")));
       return new ModelAndView(model, "kind");
     } , engine);
     

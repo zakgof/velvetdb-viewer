@@ -10,6 +10,7 @@ import com.zakgof.db.velvet.entity.IEntityDef;
 import com.zakgof.db.velvet.properties.IProperty;
 import com.zakgof.db.velvet.properties.IPropertyAccessor;
 import com.zakgof.tools.web.IField;
+import com.zakgof.velvetdb.viewer.FieldEditors;
 
 public class Glass<K, V> {
   
@@ -24,19 +25,13 @@ public class Glass<K, V> {
   @SuppressWarnings("unchecked")
   private Glass(IEntityDef<K, V> entity) {
     this.entity = entity;
-    
-    if (entity instanceof IPropertyAccessor) {
-      IPropertyAccessor<K, V> pa = (IPropertyAccessor<K, V>)entity;
-      fields = pa.getProperties().stream().collect(Collectors.toMap(propName -> propName, propName -> createField(pa.get(propName))));
-      keyField = (IField<K, V>) createField(pa.getKey());
-    } else {
-      // ??
-    }
-    
+    IPropertyAccessor<K, V> pa = entity.propertyAccessor();
+    fields = pa.getProperties().stream().collect(Collectors.toMap(propName -> propName, propName -> createField(pa.get(propName))));
+    keyField = (IField<K, V>) createField(pa.getKey());
   }
   
   private IField<?, V> createField(IProperty<?, V> property) {
-    return new PropertyField(property);
+    return new PropertyField<>(property);
   }
 
   public K keyToNative(String key) {
@@ -58,7 +53,7 @@ public class Glass<K, V> {
 //  }
 
   public Stream<IField<?, V>> fields() {
-    return fields.values().stream();
+    return Stream.concat(Stream.of(keyField), fields.values().stream());
   }
 
   public String keyName() {
@@ -105,19 +100,27 @@ public class Glass<K, V> {
 
     @Override
     public String str(P fieldJava) {
-      // TODO Auto-generated method stub
-      return null;
+      return FieldEditors.deflator(property.getType()).str(fieldJava);
+    }
+    
+    @Override
+    public String strFromInstance(V instance) {
+      return str(property.get(instance));
     }
 
     @Override
     public P java(String fieldStr) {
-      // TODO Auto-generated method stub
-      return null;
+      return FieldEditors.deflator(property.getType()).java(fieldStr);
     }
-
+    
     @Override
     public void setStr(V instance, String fieldStr) {
       property.put(instance, java(fieldStr));
+    }
+
+    @Override
+    public IFieldEditor editor() {
+      return FieldEditors.editor(property.getType());
     }
     
   }

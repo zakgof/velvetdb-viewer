@@ -26,12 +26,17 @@ public class Main {
     Book book3 = new Book("isbn-1-1-3", "Book name 3");
     Book book4 = new Book("isbn-1-1-4", "Book name 4");
     Book book5 = new Book("isbn-1-1-5", "Book name 5");
-    
+  
     Defs.BOOK.put(velvet, book1);
     Defs.BOOK.put(velvet, book2);
     Defs.BOOK.put(velvet, book3);
     Defs.BOOK.put(velvet, book4);
     Defs.BOOK.put(velvet, book5);
+    
+    for (int i=6; i<1000; i++) {      
+      Book book = new Book("isbn-" + i, "Book name " + i);
+      Defs.BOOK.put(velvet, book);
+    }
     
     Person wayne = new Person("John", "Wayne");
     Person obama = new Person("Barack", "Obama");
@@ -50,6 +55,11 @@ public class Main {
     Defs.AUTHOR_BOOK.connect(velvet, obama, book3);
     
     Defs.AUTHOR_BOOK.connect(velvet, bill, book4);
+    
+    for (int i=1; i<1000; i++) {      
+      Person person = new Person("Name-" + i, "LastName-" + i);
+      Defs.PERSON.put(velvet, person);
+    }
     
   }
 }

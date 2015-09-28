@@ -19,10 +19,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Singleton;
 import com.zakgof.db.velvet.IVelvet;
 import com.zakgof.db.velvet.entity.IEntityDef;
+import com.zakgof.db.velvet.entity.ISortableEntityDef;
 import com.zakgof.db.velvet.link.ILinkDef;
 import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
-import com.zakgof.tools.web.FieldInfo;
+import com.zakgof.db.velvet.query.IIndexQuery;
+import com.zakgof.db.velvet.query.Queries;
 import com.zakgof.tools.web.IField;
 
 @Singleton
@@ -47,8 +49,11 @@ public class VelvetViewerService {
   private <K, V> Map<String, Object> edit(ViewerDataModel model, String kind, String key, IEntityDef<K, V> entity) {
     Glass<K, V> glass = Glass.of(entity);
     V value = entity.get(velvetProvider.get(), glass.keyToNative(key));
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    List<IMultiLinkDef<K, V, ?, ?>> multiLinks = (List<IMultiLinkDef<K, V, ?, ?>>)(List)model.multiLinks(kind);
 
-    List<Map<String, ?>> multiLinkData = model.multiLinks(kind).stream().map(
+    List<Map<String, ?>> multiLinkData = multiLinks.stream().map(
        link -> ImmutableMap.<String, Object>builder().
          put("edgeKind", link.getKind()).
          put("kind", link.getChildEntity().getKind()).
@@ -67,10 +72,10 @@ public class VelvetViewerService {
        "value", childData(link, value))
       ).collect(Collectors.toList());
 
-    Map<IField<?, V>> fields = glass.fields().collect(Collectors.toMap(f -> f, f ->
+    Map<IField<?, V>, Map<String, ?>> fields = glass.fields().collect(Collectors.toMap(f -> f, f ->
       ImmutableMap.<String, Object>of(
-        "value", f.getValue(value),
-        "editor", model == null ? ViewerDataModel.getDefaultEditor(f.getType()) : model.editor(f)
+        "value", f.strFromInstance(value),
+        "editor", f.editor()
         ),
       (u,v)->u, LinkedHashMap::new));
 
@@ -129,20 +134,19 @@ public class VelvetViewerService {
     return childKeyDisplay;
   }
 
-  private Object candidatesData(IMultiLinkDef<?, ?, ?, ?> link, Object entry) {
+  private <PK, PV, CK, CV> Object candidatesData(IMultiLinkDef<PK, PV, CK, CV> link, PV entry) {
     // TODO
     // MultiLinkDef - all except mine
     // BiMultiLinkDef - all except mine, mark busy
     // ManyToMany - all except mine, mark busy in another way
     
-    IEntityDef<?, ?> childEntity = link.getChildEntity();
-    Collection<?> keys = childEntity.keys(velvetProvider.get());
-    Glass<?, ?> glass = Glass.of(childEntity);
+    IEntityDef<CK, CV> childEntity = link.getChildEntity();
+    Collection<CK> keys = childEntity.keys(velvetProvider.get());
+    Glass<CK, CV> glass = Glass.of(childEntity);
 
     Predicate<Object> filter = (key -> true);
     Predicate<Object> mark = (key -> false);
     
-
     /*
      * TODO
     if (link instanceof BiMultiLinkDef) {
@@ -153,33 +157,38 @@ public class VelvetViewerService {
     */
 
     // TODO limit
-    List<String> keyStrings = keys.stream().filter(Objects::nonNull).filter(filter).limit(200).map(key -> glass.keyToDisplay(key)).sorted().collect(Collectors.toList());
+    List<String> keyStrings = keys.stream().
+        filter(Objects::nonNull).
+        filter(filter).
+        limit(200).
+        map(key -> glass.keyToDisplay(key)).
+        sorted().
+        collect(Collectors.toList());
 
     return keyStrings;
   }
 
   @Transactional
-  public Map<String, Object> kindTable(String kind) {
+  public Map<String, Object> kindTable(String kind, int offset, int limit) {
     IEntityDef<?, ?> entity = model.getEntity(kind);
-    return kindTable(model, kind, entity);
+    return kindTable(model, kind, entity, offset, limit);
   }
     
-   private <K, V> Map<String, Object> kindTable(ViewerDataModel model, String kind, IEntityDef<K, V> entity) {
-     
-     List<V> objects = entity.get(velvetProvider.get());
-     Glass<K, V> glass = Glass.of(entity);
-     
+  private <K, V> Map<String, Object> kindTable(ViewerDataModel model, String kind, IEntityDef<K, V> entity, int offset, int limit) {
+    
+    List<V> objects = range(entity, offset, limit);
+    Glass<K, V> glass = Glass.of(entity);
 
     List<IField<?, V>> fields = glass.fields().collect(Collectors.toList());
-    List<Map<String, ?>> rows = 
-        
+    List<Map<String, ?>> rows =
+
         objects.stream()
           .sorted(this.by(o -> entity.keyOf(o)))
           .map(obj -> fieldMap(obj, fields, model))
           .collect(Collectors.toList());
 
       Map<String, Object> jspmodel = ImmutableMap.<String, Object>builder().
-        put("fields", fields).
+        put("fields", fields.stream().map(IField::getName).collect(Collectors.toList())).
         put("rows", rows).
         put("keyField", glass.keyName()).
         put("kind", kind).
@@ -191,11 +200,22 @@ public class VelvetViewerService {
       return jspmodel;
     }
 
-  private Map<String, ?> fieldMap(Object obj, List<IField<?, ?>> fields, ViewerDataModel model) {
-    return fields.stream().collect(Collectors.toMap(FieldInfo::getName, f ->
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  private <K, V> List<V> range(IEntityDef<K, V> entity, int offset, int limit) {
+    if (entity instanceof ISortableEntityDef) {
+      IIndexQuery query = Queries.range(limit, offset);
+      return ((ISortableEntityDef)entity).get(velvetProvider.get(), query);
+    } else {
+      List<K> keys = entity.keys(velvetProvider.get()).subList(offset, offset + limit);
+      return entity.get(velvetProvider.get(), keys);
+    }
+  }
+
+  private <V> Map<String, ?> fieldMap(V obj, List<IField<?, V>> fields, ViewerDataModel model) {
+    return fields.stream().collect(Collectors.toMap(IField::getName, f ->
       ImmutableMap.<String, Object>of(
-                "value", f.getValue(obj),
-                "editor", model == null ? ViewerDataModel.DEFAULT_EDITOR : model.editor(f)
+                "value", f.strFromInstance(obj),
+                "editor", f.editor()
                 ),
       (u,v) -> u, () -> new LinkedHashMap<>()
     ));

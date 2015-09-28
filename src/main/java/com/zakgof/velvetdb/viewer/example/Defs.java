@@ -10,8 +10,8 @@ import com.zakgof.tools.web.pojoeditor.ViewerDataModel;
 public class Defs {
   
   
-  public static final IKeylessEntityDef<Person> PERSON = Entities.keylessAnno(Person.class);
-  public static final ISortableEntityDef<String, Book> BOOK = Entities.sortedAnno(Book.class);
+  public static final IKeylessEntityDef<Person> PERSON = Entities.keyless(Person.class);
+  public static final ISortableEntityDef<String, Book> BOOK = Entities.sorted(Book.class);
   
   public static final IBiMultiLinkDef<Long, Person, String, Book> AUTHOR_BOOK = Links.biMulti(PERSON, BOOK);
   

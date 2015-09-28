@@ -1,17 +1,22 @@
 package com.zakgof.tools.web;
 
-public interface IField<T, E> {
+import com.zakgof.tools.web.pojoeditor.IFieldEditor;
+
+public interface IField<P, V> {
   
   String getName();
   
   boolean isSettable();
   
-  String str(T fieldJava); // TODO: custom editors
+  String str(P fieldJava);
   
-  T java(String fieldStr);
+  String strFromInstance(V instance);
+  
+  P java(String fieldStr);
+  
+  IFieldEditor editor();
 
-  void setStr(E instance, String fieldStr);
-  
+  void setStr(V instance, String fieldStr);
   
 }
 

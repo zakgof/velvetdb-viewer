@@ -16,29 +16,20 @@
 	<body>
 	
 			
-		<h4><a href="${it.rootUrl}">All Kinds</a> &gt; ${it.kind} </h4>
+		<h4><a href="${it.rootUrl}">All Kinds</a> &gt; <span th:text="${kind}">kind</span></h4>
 
 		<table class="pure-table pure-table-bordered">
 
 		<tr>
-			<td>[<span th:text="${keyField}"/>]</td>			
+			<td><span th:text="${keyField}">keyField</span></td>			
 			<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${field}"/></td>
 		</tr>
-		
-		<!--
 	
-	<c:forEach var="row" items="${it.rows}">
-		<tr>
-			<td><a href="${it.baseEditUrl}/<c:out value="${row[it.keyField].value}"/>"><c:out value="${row[it.keyField].value}"/></a></td>
-			<c:forEach var="field" items="${it.fields}">
-				<c:if test="${!field.equals(it.keyField)}" >
-				  <td><c:out value="${row[field].editor.view(row[field].value)}"/></td>
-				</c:if>				
-			</c:forEach>
+		<tr th:each="row: ${rows}">
+			<td><a href="url" th:href="'/entry/' + ${kind} + '/' + ${row[keyField].value}"><span th:text="${row[keyField].editor.view(row[keyField].value)}"/></a></td>
+			<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${row[field].editor.view(row[field].value)}"/></td>
 		</tr>
-	</c:forEach>
 	
-	-->
 
 </table>
 

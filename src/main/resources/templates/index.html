@@ -18,15 +18,11 @@
 		<h1>Hello2</h1>
 		<table class="pure-table pure-table-bordered">
 				
-			<tr th:each="kind : ${kinds}>
-				<td><a href="/${kind}">${kind}</a></td>			
+			<tr th:each="kind : ${kinds}">
+				<td><a href="/kind/${kind}" th:href="/kind/${kind}">/kind/${kind}</a></td>			
 			</tr>
 		
 		</table>
 		
-
-</table>
-		
-	
 	</body>
 </html>
