@@ -3,41 +3,44 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="description"
-			content="Start your next web project with Pure." />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		
-		<title>Get Started &ndash; Pure</title>
-		
-		<link rel="stylesheet"
-			href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />	
+		<title th:text="${kind} + ' velvetdb'">kind - velvetdb</title>		
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />	
 	</head>
 		
 	<body>
 	
 			
 		<h4><a href="${it.rootUrl}">All Kinds</a> &gt; <span th:text="${kind}">kind</span></h4>
+		
+		<p>
+			Shown records <span th:text = "${offset} + 1" >101</span> - <span th:text="${offset} + ${limit}">200</span> of <span th:text="${total}"></span> 
+		</p>
 
 		<table class="pure-table pure-table-bordered">
+			<thead>
+				<tr>
+					<th th:text="${keyField}">key field name</th>				
+					<th th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${field}"/></th>
+				</tr>
+				
+			</thead>
+			<tbody>
+				<tr th:each="row: ${rows}">				
+					<td><a href="url" th:href="'/record/' + ${kind} + '/' + ${row[keyField].value}"><span th:text="${row[keyField].editor.view(row[keyField].value)}"/></a></td>
+					<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${row[field].editor.view(row[field].value)}"/></td>
+				</tr>
+		
+			</tbody>
+		
+		</table>
 
-		<tr>
-			<td><span th:text="${keyField}">keyField</span></td>			
-			<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${field}"/></td>
-		</tr>
-	
-		<tr th:each="row: ${rows}">
-			<td><a href="url" th:href="'/entry/' + ${kind} + '/' + ${row[keyField].value}"><span th:text="${row[keyField].editor.view(row[keyField].value)}"/></a></td>
-			<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${row[field].editor.view(row[field].value)}"/></td>
-		</tr>
-	
 
-</table>
 
-<p>New record </p>
-<form method="post" action="${it.newRecordUrl}" enctype="application/x-www-form-urlencoded" >
-${it.keyField} <input type="text" name="key" />
-<input type="submit" value="save" />
-</form>
+		<p>New record</p>
+		<form method="post" action="new/kind" th:action="'/new/' + ${kind}" enctype="application/x-www-form-urlencoded" >
+			<span th:text="${keyField}">keyName</span> <input type="text" name="key" />
+		<input type="submit" value="save" />
+		</form>
 		
 	
 	</body>

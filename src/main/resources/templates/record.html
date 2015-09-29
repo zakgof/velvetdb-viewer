@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title th:text="${kind} + ' velvetdb'">kind - velvetdb</title>		
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" />
+		
+		<script type="text/javascript" src="http://code.jquery.com/jquery.min.js" charset="utf-8"></script>	
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-te/1.4.0/jquery-te.min.js" charset="utf-8"></script>
+	</head>
+		
+	<body>
+	
+			
+		<form method="post" action="${it.submitUrl}" enctype="application/x-www-form-urlencoded" >
+				
+		<h4><a href="/">All Kinds</a> &gt; <a href="${it.kindUrl}${it.kind}" th:text="${kind}">kind</a>  &gt; <span th:text="${key}">key</span></h4>
+		
+		<table class="pure-table pure-table-bordered">
+			<tbody>
+				<tr th:each="field : ${fields}">
+				   <td><span th:text="${field.key.name}">key name</span></td>   
+					<td th:utext="${field.value.editor.edit(field.key.name, field.value['value'])}">value</td>
+			  	</tr>
+			</tbody>
+		</table>
+		
+	<input type="hidden" name="-key" value="${it.key}" />
+	<input type="submit" value="save" />
+	
+	</form>
+	
+	<div style = "border: 5px solid #ccf; margin: 5px; padding: 10px" >
+	
+		<p>Linx</p>
+		
+		<div th:each="singleLink : ${singleLinks}" >
+		  <p th:text="${singleLink.edgeKind} + ' ' + ${singleLink.kind}">edgeKind kind 
+		  
+		  <c:choose>
+		    <c:when test="${singleLink.picker != ''}">
+		      <form method="post" action="${it.pickLinkUrl}" enctype="application/x-www-form-urlencoded" >
+			     <select name="parentKey">
+			  	   <c:forEach var="key" items="${singleLink.picker.keys}">
+			  	     <c:choose>	       
+			  	       <c:when test="${singleLink.value.equals(key)}">
+			  	         <option value="${key}" selected="selected">${key}</option>
+			  	       </c:when>
+			  	       <c:otherwise>
+			  	         <option value="${key}">${key}</option>
+			  	       </c:otherwise>
+			  		 </c:choose>	       	       	  	          
+			  	   </c:forEach>
+			  	 </select>
+			  	 <input type="hidden" name="parentLinkKind" value="${singleLink.picker.parentLinkKind}" />
+			  	 <input type="hidden" name="kind" value="${it.kind}" />
+			  	 <input type="hidden" name="key" value="${it.key}" />
+			     <input type="submit" value="Save" />
+			  </form> 
+		    </c:when>	    
+		  </c:choose>
+		  
+		  <c:choose>
+		  	<c:when test="${singleLink.value.equals('')}">	  		
+		      <form method="post" action="${it.newRecordUrl}/${singleLink.kind}" enctype="application/x-www-form-urlencoded" >
+		      	<c:if test="${singleLink.needsKey}">
+		        	<input type="text" name="key" value="" />
+		  		</c:if>	        
+		        <input type="hidden" name="linkHostKey" value="${it.key}" />
+		        <input type="hidden" name="linkEdgeKind" value="${singleLink.edgeKind}" />
+		      	<input type="submit" value="+" />
+		      </form>	      
+		     </c:when>
+		     <c:otherwise>	      
+		         <a href="${it.editUrl}/${singleLink.kind}/${singleLink.value}">${singleLink.needsKey ? singleLink.value : "[autokey]"}</a>	         
+		     </c:otherwise>
+		  </c:choose>
+		  
+		  </p>
+		  
+		</div>
+		
+		<div th:each ="multiLink : ${multiLinks}">		  
+		  <p th:text="${multiLink.edgeKind} + ' ' + ${multiLink.kind}">edgeKind kind </p>
+		  <div class = "table-striped">
+		  <table class="table-bordered table-striped">
+		 	
+		 	<tr th:each="key : ${multiLink.keyz}">
+		 		<td><a 
+			 	href="/record/kind/id"
+			 	th:href="'/record/' + ${multiLink.kind} + '/' + ${key}"
+			 	th:text="${key}">key</a></td>
+			</tr>
+		 	
+		 	<tr>
+		 	  <td>
+			    <form method="post" action="${it.pickChildUrl}" enctype="multipart/form-data" >
+			    
+			      <select name="childKey">		      
+			        <c:forEach var="candidateKey" items="${multiLink.candidates}">
+		 			<option value="${candidateKey}">${candidateKey}</option>
+		 			</c:forEach>
+			      </select>
+			  
+				  <input type="hidden" name="hostKey" value="${it.key}" />
+				  <input type="hidden" name="edgeKind" value="${multiLink.edgeKind}" />
+				
+				  <input type="submit" value="Pick" />
+			    </form>
+		 	  </td>
+		 	</tr>
+		 	
+		  </table>
+		  
+		  </div>
+		</div>
+	
+	</div>	
+	
+	
+	<p></p>
+	
+	<form method="post" action="${it.deleteUrl}" enctype="application/x-www-form-urlencoded" >
+		<input type="hidden" name="-key" value="${it.key}" />
+		<input type="submit" value="delete" />
+	</form>
+	
+	<script>
+		$(function() {
+			$('.rich').jqte();		    
+		});
+	</script>
+
+</body>
+</html>

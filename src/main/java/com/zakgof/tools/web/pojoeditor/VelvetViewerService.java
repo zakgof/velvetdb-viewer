@@ -41,7 +41,7 @@ public class VelvetViewerService {
   }
 
   @Transactional
-  public  Map<String, Object> edit(String kind, String key) {
+  public  Map<String, Object> record(String kind, String key) {
     IEntityDef<?, ?> entity = model.getEntity(kind);
     return edit(model, kind, key, entity);
   }
@@ -59,7 +59,7 @@ public class VelvetViewerService {
          put("kind", link.getChildEntity().getKind()).
          put("needsKey", true).                               //  !VelvetUtil.isAutoKeyed(link.getChildClass())).
          put("picker", pickerData(model, link)).
-         put("values", childrenData(link, value)).
+         put("keyz", childrenData(link, value)).
          put("candidates", candidatesData(link, value)).build())
         .collect(Collectors.toList());
 
@@ -195,6 +195,9 @@ public class VelvetViewerService {
         put("newRecordUrl", "/viewer/submitnew/" + kind).
         put("rootUrl", "/viewer").
         put("baseEditUrl", "/viewer/entry/" + kind).
+        put("limit", limit).
+        put("offset", offset).
+        put("total", entity.size(velvetProvider.get())).
         build();
 
       return jspmodel;
@@ -203,7 +206,7 @@ public class VelvetViewerService {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private <K, V> List<V> range(IEntityDef<K, V> entity, int offset, int limit) {
     if (entity instanceof ISortableEntityDef) {
-      IIndexQuery query = Queries.range(limit, offset);
+      IIndexQuery query = Queries.range(offset, limit);
       return ((ISortableEntityDef)entity).get(velvetProvider.get(), query);
     } else {
       List<K> keys = entity.keys(velvetProvider.get()).subList(offset, offset + limit);

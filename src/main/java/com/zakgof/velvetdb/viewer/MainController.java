@@ -45,6 +45,13 @@ public class MainController {
       return new ModelAndView(model, "kind");
     } , engine);
     
+    get("/record/:kind/:id", (request, response) -> {
+      String kind = request.params("kind");
+      String id = request.params("id");
+      Map<String, Object> model = service.record(kind, id);
+      return new ModelAndView(model, "record");
+    } , engine);
+    
     
   }
 
