@@ -2,7 +2,6 @@ package com.zakgof.tools.web.pojoeditor;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +24,6 @@ import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
 import com.zakgof.db.velvet.query.IIndexQuery;
 import com.zakgof.db.velvet.query.Queries;
-import com.zakgof.tools.web.IField;
 
 @Singleton
 public class VelvetViewerService {
@@ -49,6 +47,7 @@ public class VelvetViewerService {
   private <K, V> Map<String, Object> edit(ViewerDataModel model, String kind, String key, IEntityDef<K, V> entity) {
     Glass<K, V> glass = Glass.of(entity);
     V value = entity.get(velvetProvider.get(), glass.keyToNative(key));
+    Map<String, IValueRender> row = glass.renderMap(value);
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     List<IMultiLinkDef<K, V, ?, ?>> multiLinks = (List<IMultiLinkDef<K, V, ?, ?>>)(List)model.multiLinks(kind);
@@ -72,16 +71,10 @@ public class VelvetViewerService {
        "value", childData(link, value))
       ).collect(Collectors.toList());
 
-    Map<IField<?, V>, Map<String, ?>> fields = glass.fields().collect(Collectors.toMap(f -> f, f ->
-      ImmutableMap.<String, Object>of(
-        "value", f.strFromInstance(value),
-        "editor", f.editor()
-        ),
-      (u,v)->u, LinkedHashMap::new));
-
     Map<String, Object> jmodel = ImmutableMap.<String, Object>builder().
       put("kind", kind).
-      put("fields", fields).
+      put("fields", glass.fields()).
+      put("row", row).
       put("key", key).
       put("keyField", glass.keyName()).
       put("multiLinks", multiLinkData).
@@ -179,16 +172,16 @@ public class VelvetViewerService {
     List<V> objects = range(entity, offset, limit);
     Glass<K, V> glass = Glass.of(entity);
 
-    List<IField<?, V>> fields = glass.fields().collect(Collectors.toList());
+    Collection<String> fields = glass.fields();
     List<Map<String, ?>> rows =
 
         objects.stream()
           .sorted(this.by(o -> entity.keyOf(o)))
-          .map(obj -> fieldMap(obj, fields, model))
+          .map(obj -> glass.renderMap(obj))
           .collect(Collectors.toList());
 
       Map<String, Object> jspmodel = ImmutableMap.<String, Object>builder().
-        put("fields", fields.stream().map(IField::getName).collect(Collectors.toList())).
+        put("fields", fields).
         put("rows", rows).
         put("keyField", glass.keyName()).
         put("kind", kind).
@@ -212,16 +205,6 @@ public class VelvetViewerService {
       List<K> keys = entity.keys(velvetProvider.get()).subList(offset, offset + limit);
       return entity.get(velvetProvider.get(), keys);
     }
-  }
-
-  private <V> Map<String, ?> fieldMap(V obj, List<IField<?, V>> fields, ViewerDataModel model) {
-    return fields.stream().collect(Collectors.toMap(IField::getName, f ->
-      ImmutableMap.<String, Object>of(
-                "value", f.strFromInstance(obj),
-                "editor", f.editor()
-                ),
-      (u,v) -> u, () -> new LinkedHashMap<>()
-    ));
   }
 
   @SuppressWarnings("unchecked")

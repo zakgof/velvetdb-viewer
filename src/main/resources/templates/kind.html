@@ -26,8 +26,8 @@
 			</thead>
 			<tbody>
 				<tr th:each="row: ${rows}">				
-					<td><a href="url" th:href="'/record/' + ${kind} + '/' + ${row[keyField].value}"><span th:text="${row[keyField].editor.view(row[keyField].value)}"/></a></td>
-					<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${row[field].editor.view(row[field].value)}"/></td>
+					<td><a href="url" th:href="'/record/' + ${kind} + '/' + ${row[keyField].view()}"><span th:text="${row[keyField].view()}"/></a></td>
+					<td th:if="${!field.equals(keyField)}" th:each="field: ${fields}"><span th:text="${row[field].view()}"/></td>
 				</tr>
 		
 			</tbody>

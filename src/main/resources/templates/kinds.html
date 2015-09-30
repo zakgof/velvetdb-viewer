@@ -19,7 +19,7 @@
 		<table class="pure-table pure-table-bordered">
 				
 			<tr th:each="kind : ${kinds}">
-				<td><a href="/kind" th:text="${kind}" th:href="${kind}">template</a></td>		
+				<td><a href="/kind" th:text="${kind}" th:href="'/kind/' + ${kind}">kind</a></td>		
 			</tr>
 		
 		</table>

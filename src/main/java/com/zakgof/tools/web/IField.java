@@ -1,22 +1,13 @@
 package com.zakgof.tools.web;
 
+import com.zakgof.db.velvet.properties.IProperty;
 import com.zakgof.tools.web.pojoeditor.IFieldEditor;
 
 public interface IField<P, V> {
   
-  String getName();
+  IFieldEditor<P> editor();
   
-  boolean isSettable();
-  
-  String str(P fieldJava);
-  
-  String strFromInstance(V instance);
-  
-  P java(String fieldStr);
-  
-  IFieldEditor editor();
-
-  void setStr(V instance, String fieldStr);
+  IProperty<P, V> property();
   
 }
 

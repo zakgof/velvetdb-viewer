@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.zakgof.db.velvet.entity.IEntityDef;
@@ -14,42 +12,21 @@ import com.zakgof.db.velvet.link.IBiLinkDef;
 import com.zakgof.db.velvet.link.ILinkDef;
 import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
-import com.zakgof.tools.web.FieldInfo;
-import com.zakgof.tools.web.FieldType;
 
 public class ViewerDataModel {
   
-  public static IFieldEditor getDefaultEditor(String type) {
-    if (type.equals(FieldType.BYTEARRAY.name()))
-      return FILE_EDITOR;
-    else
-      return DEFAULT_EDITOR;
-  }
-  
-  public static final IFieldEditor FILE_EDITOR = new IFieldEditor() {
-    @Override
-    public String view(String value) {
-      return value;
-    }
-    
-    @Override
-    public String edit(String name, String value) {
-      return "<input type=\"file\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeHtml(value) + "\" />";
-    }    
-  };
-  
- public static final IFieldEditor DEFAULT_EDITOR = new IFieldEditor() {
-    
-    @Override
-    public String view(String value) {
-      return value;
-    }
-    
-    @Override
-    public String edit(String name, String value) {
-      return "<input type=\"text\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeHtml(value) + "\" />";
-    }
-  };
+//  
+//  public static final IFieldRender FILE_EDITOR = new IFieldRender() {
+//    @Override
+//    public String view(String value) {
+//      return value;
+//    }
+//    
+//    @Override
+//    public String edit(String name, String value) {
+//      return "<input type=\"file\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeHtml(value) + "\" />";
+//    }    
+//  };
   
   private Map<String, IEntityDef<?,?>> entities = Maps.newHashMap();
   private Map<String, List<ISingleLinkDef<?,?,?,?>>> singles = Maps.newHashMap();
@@ -71,14 +48,6 @@ public class ViewerDataModel {
   
   public List<ISingleLinkDef<?,?,?,?>> singleLinks(String kind) {
     return singles.getOrDefault(kind, Collections.emptyList());
-  }
-
-  public IFieldEditor editor(FieldInfo f) {
-    // TODO
-    if (f.type.equals(FieldType.BYTEARRAY.name()))
-      return FILE_EDITOR;
-    else
-      return DEFAULT_EDITOR;
   }
   
   public static Builder builder() {

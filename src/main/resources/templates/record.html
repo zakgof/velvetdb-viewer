@@ -20,8 +20,8 @@
 		<table class="pure-table pure-table-bordered">
 			<tbody>
 				<tr th:each="field : ${fields}">
-				   <td><span th:text="${field.key.name}">key name</span></td>   
-					<td th:utext="${field.value.editor.edit(field.key.name, field.value['value'])}">value</td>
+				   <td><span th:text="${field}">key name</span></td>
+					<td th:utext="${row[field].edit()}">value</td>
 			  	</tr>
 			</tbody>
 		</table>

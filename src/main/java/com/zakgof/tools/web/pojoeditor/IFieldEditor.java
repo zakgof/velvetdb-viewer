@@ -1,8 +1,9 @@
 package com.zakgof.tools.web.pojoeditor;
 
-public interface IFieldEditor {
+public interface IFieldEditor<P> {
   
-  public String view(String value);
+  P java(String fieldStr);
   
-  public String edit(String name, String value);
+  IValueRender render(P fieldJava);
+
 }

@@ -2,9 +2,7 @@ package com.zakgof.velvetdb.viewer.example;
 
 import java.io.Serializable;
 
-import com.zakgof.db.velvet.annotation.Keyless;
-
-@Keyless
+@SuppressWarnings("serial")
 public class Person implements Serializable {
 
   private String firstName;

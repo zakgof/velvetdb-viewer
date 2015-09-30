@@ -50,6 +50,12 @@ public class Main {
     Defs.PERSON.put(velvet, bill);
     Defs.PERSON.put(velvet, hillary);
     
+    addPassport(velvet, wayne,  "JW12345");
+    addPassport(velvet, obama,  "BO99999");
+    addPassport(velvet, bush,   "GB66666");
+    addPassport(velvet, bill,   "BC43424");
+    addPassport(velvet, hillary,"HC98765");
+    
     Defs.AUTHOR_BOOK.connect(velvet, obama, book1);
     Defs.AUTHOR_BOOK.connect(velvet, obama, book2);
     Defs.AUTHOR_BOOK.connect(velvet, obama, book3);
@@ -61,5 +67,11 @@ public class Main {
       Defs.PERSON.put(velvet, person);
     }
     
+  }
+
+  private static void addPassport(IVelvet velvet, Person person, String passportNo) {
+    Passport passport = new Passport(passportNo);
+    Defs.PASSPORT.put(velvet, passport);
+    Defs.PERSON_PASSPORT.connect(velvet, person, passport);
   }
 }
