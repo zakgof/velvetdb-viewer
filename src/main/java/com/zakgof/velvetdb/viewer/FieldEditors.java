@@ -6,8 +6,6 @@ import java.util.function.Function;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.zakgof.tools.web.pojoeditor.IFieldEditor;
-import com.zakgof.tools.web.pojoeditor.IValueRender;
 
 public class FieldEditors {
 

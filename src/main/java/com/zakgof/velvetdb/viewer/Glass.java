@@ -1,4 +1,4 @@
-package com.zakgof.tools.web.pojoeditor;
+package com.zakgof.velvetdb.viewer;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import com.zakgof.db.velvet.entity.IEntityDef;
 import com.zakgof.db.velvet.properties.IProperty;
 import com.zakgof.db.velvet.properties.IPropertyAccessor;
-import com.zakgof.tools.web.IField;
-import com.zakgof.velvetdb.viewer.FieldEditors;
 
 public class Glass<K, V> {
 

@@ -2,8 +2,6 @@ package com.zakgof.velvetdb.viewer;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.zakgof.tools.web.pojoeditor.VelvetViewerService;
-import com.zakgof.tools.web.pojoeditor.ViewerDataModel;
 
 public class VelvetViewer {
   

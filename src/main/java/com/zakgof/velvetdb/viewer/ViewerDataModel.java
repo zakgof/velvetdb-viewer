@@ -1,4 +1,4 @@
-package com.zakgof.tools.web.pojoeditor;
+package com.zakgof.velvetdb.viewer;
 
 import java.util.Collection;
 import java.util.Collections;

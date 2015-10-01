@@ -1,7 +1,6 @@
-package com.zakgof.tools.web;
+package com.zakgof.velvetdb.viewer;
 
 import com.zakgof.db.velvet.properties.IProperty;
-import com.zakgof.tools.web.pojoeditor.IFieldEditor;
 
 public interface IField<P, V> {
   

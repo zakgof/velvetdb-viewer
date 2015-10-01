@@ -6,7 +6,7 @@ import com.zakgof.db.velvet.entity.ISortableEntityDef;
 import com.zakgof.db.velvet.link.IBiMultiLinkDef;
 import com.zakgof.db.velvet.link.IBiSingleLinkDef;
 import com.zakgof.db.velvet.link.Links;
-import com.zakgof.tools.web.pojoeditor.ViewerDataModel;
+import com.zakgof.velvetdb.viewer.ViewerDataModel;
 
 public class Defs {
   

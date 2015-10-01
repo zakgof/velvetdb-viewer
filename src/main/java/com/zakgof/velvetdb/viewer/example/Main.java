@@ -21,6 +21,9 @@ public class Main {
 
   private static void initDb(IVelvet velvet) {
     
+    if (Defs.BOOK.size(velvet) > 0)
+      return;
+    
     Book book1 = new Book("isbn-1-1-1", "Book name 1");
     Book book2 = new Book("isbn-1-1-2", "Book name 2");
     Book book3 = new Book("isbn-1-1-3", "Book name 3");
