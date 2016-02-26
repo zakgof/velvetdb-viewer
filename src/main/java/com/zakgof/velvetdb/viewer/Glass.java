@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.zakgof.db.velvet.VelvetException;
 import com.zakgof.db.velvet.entity.IEntityDef;
 import com.zakgof.db.velvet.properties.IProperty;
 import com.zakgof.db.velvet.properties.IPropertyAccessor;
@@ -85,7 +86,7 @@ public class Glass<K, V> {
       V object = constructor.newInstance();
       return object;
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-      throw new RuntimeException(e);
+      throw new VelvetException(e);
     }
   }
 
