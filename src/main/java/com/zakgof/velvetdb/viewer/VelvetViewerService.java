@@ -24,13 +24,13 @@ import com.zakgof.db.velvet.link.IBiSingleLinkDef;
 import com.zakgof.db.velvet.link.ILinkDef;
 import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
-import com.zakgof.db.velvet.query.IIndexQuery;
+import com.zakgof.db.velvet.query.IRangeQuery;
 import com.zakgof.db.velvet.query.Queries;
 
 /**
- * 
+ *
  * Picker logics:
- * 
+ *
  * single link - show all
  *
  */
@@ -39,10 +39,10 @@ public class VelvetViewerService {
 
   @Inject
   private Provider<IVelvet> velvetProvider;
-  
+
   @Inject
   private ViewerDataModel model;
-  
+
   public ViewerDataModel getModel() {
     return model;
   }
@@ -52,14 +52,14 @@ public class VelvetViewerService {
     IEntityDef<?, ?> entity = model.getEntity(kind);
     return record(model, kind, key, entity);
   }
-    
+
   private <K, V> Map<String, Object> record(ViewerDataModel model, String kind, String key, IEntityDef<K, V> entity) {
     Glass<K, V> glass = Glass.of(entity);
     V value = entity.get(velvetProvider.get(), glass.keyToNative(key));
     Map<String, IValueRender> row = glass.renderMap(value);
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    List<IMultiLinkDef<K, V, ?, ?>> multiLinks = (List<IMultiLinkDef<K, V, ?, ?>>)(List)model.multiLinks(kind);
+    List<IMultiLinkDef<K, V, ?, ?>> multiLinks = (List)model.multiLinks(kind);
 
     List<Map<String, ?>> multiLinkData = multiLinks.stream().map(
        link -> ImmutableMap.<String, Object>builder().
@@ -102,14 +102,14 @@ public class VelvetViewerService {
   }
 
   private <HK, HV, CK, CV> List<Map<String, Object>> pickerData(ILinkDef<HK, HV, CK, CV> link) {
-    
-    
+
+
     Glass<CK, CV> childGlass = Glass.of(link.getChildEntity());
     Glass<HK, HV> hostGlass = Glass.of(link.getHostEntity());
-    
+
     @SuppressWarnings("unchecked")
-    IBiSingleLinkDef<CK, CV, HK, HV> backLink =  (link instanceof IBiSingleLinkDef) ? ((IBiSingleLinkDef<HK, HV, CK, CV>)link).back() : null;      
-    
+    IBiSingleLinkDef<CK, CV, HK, HV> backLink =  (link instanceof IBiSingleLinkDef) ? ((IBiSingleLinkDef<HK, HV, CK, CV>)link).back() : null;
+
     // TODO: need pagination here as there could be too many records.
     List<Map<String, Object>> candidateList = link.getChildEntity().keys(velvetProvider.get()).stream().map(key -> pickerEntry(hostGlass, childGlass, key, link, backLink)).collect(Collectors.toList());
     return candidateList;
@@ -146,14 +146,14 @@ public class VelvetViewerService {
     // MultiLinkDef - all except mine
     // BiMultiLinkDef - all except mine, mark busy
     // ManyToMany - all except mine, mark busy in another way
-    
+
     IEntityDef<CK, CV> childEntity = link.getChildEntity();
     Collection<CK> keys = childEntity.keys(velvetProvider.get());
     Glass<CK, CV> glass = Glass.of(childEntity);
 
     Predicate<Object> filter = (key -> true);
     Predicate<Object> mark = (key -> false);
-    
+
     /*
      * TODO
     if (link instanceof BiMultiLinkDef) {
@@ -180,9 +180,9 @@ public class VelvetViewerService {
     IEntityDef<?, ?> entity = model.getEntity(kind);
     return kind(model, kind, entity, offset, limit);
   }
-    
+
   private <K, V> Map<String, Object> kind(ViewerDataModel model, String kind, IEntityDef<K, V> entity, int offset, int limit) {
-    
+
     List<V> objects = range(entity, offset, limit);
     Glass<K, V> glass = Glass.of(entity);
 
@@ -193,7 +193,7 @@ public class VelvetViewerService {
           .sorted(this.by(o -> entity.keyOf(o)))
           .map(obj -> glass.renderMap(obj))
           .collect(Collectors.toList());
-    
+
     long total = entity.size(velvetProvider.get());
 
       Map<String, Object> jspmodel = ImmutableMap.<String, Object>builder().
@@ -216,7 +216,7 @@ public class VelvetViewerService {
   @SuppressWarnings({ "rawtypes", "unchecked" })
   private <K, V> List<V> range(IEntityDef<K, V> entity, int offset, int limit) {
     if (entity instanceof ISortableEntityDef) {
-      IIndexQuery query = Queries.range(offset, limit);
+      IRangeQuery query = Queries.range(offset, limit);
       return ((ISortableEntityDef)entity).get(velvetProvider.get(), query);
     } else {
       List<K> keys = entity.keys(velvetProvider.get()).subList(offset, offset + limit);
@@ -234,7 +234,7 @@ public class VelvetViewerService {
     IEntityDef<?, ?> entity = model.getEntity(kind);
     submitEdited(model, entity, key, map);
   }
-  
+
   private <K, V> void submitEdited(ViewerDataModel model,  IEntityDef<K, V> entity, String key, Map<String, String> map) {
     Glass<K, V> glazz = Glass.of(entity);
     V object = createPojo(glazz, map);
@@ -244,7 +244,7 @@ public class VelvetViewerService {
   private <K, V> K persistNewObject(String key, Glass<K, V> glass, IEntityDef<K, V> entity) {
     K objectKey = null;
     // if (!VelvetUtil.isAutoKeyed(ci.getType())) { // TODO
-      objectKey = (K) glass.keyToNative(key);
+      objectKey = glass.keyToNative(key);
       V object = createPojo(glass, key);
       entity.put(velvetProvider.get(), object);
 //    } else {
@@ -254,7 +254,7 @@ public class VelvetViewerService {
 //    }
     return objectKey;
   }
-  
+
   private static <K, V> V createPojo(Glass<K, V> glass, String key) {
     V instance = glass.instantiate();
     glass.setField(instance, glass.keyName(), key);
@@ -277,7 +277,7 @@ public class VelvetViewerService {
     IslandModel deletor = model.getDeletor();
     if (deletor == null)
       throw new RuntimeException("No deletor found for " + kind);
-    
+
     IEntityDef<?, ?> entity = model.getEntity(kind);
     Glass<?> glass = Glass.of(entity);
     Object keyObject = glass.keyToNative(key);
@@ -290,7 +290,7 @@ public class VelvetViewerService {
     IEntityDef<?, ?> entity = model.getEntity(kind);
     return submitNew(model, entity, key, linkHostKey, linkEdgeKind);
   }
-  
+
   private <K, V> String submitNew(ViewerDataModel model, IEntityDef<K, V> entity , String key, String linkHostKey, String linkEdgeKind) {
     Glass<K, V> glass = Glass.of(entity);
     K objectKey = persistNewObject(key, glass, entity);
@@ -314,7 +314,7 @@ public class VelvetViewerService {
     attachToParentHost(model, linkHostKey, linkDef, objectKey);
     */
   }
-  
+
   private <HK, CK> void attachToParentHost(ViewerDataModel model, String linkHostKey,  ILinkDef<HK, ?, CK, ?> linkDef, Object objectKey) {
     Class<?> linkHostClass = linkDef.getHostEntity().getValueClass();
     Glass<HK, ?> glass = Glass.of(linkDef.getHostEntity());
