@@ -11,25 +11,25 @@ import com.zakgof.db.velvet.IVelvetEnvironment;
 import com.zakgof.db.velvet.VelvetFactory;
 
 public class VelvetTransactionModule extends AbstractModule {
-  
+
   private IVelvetEnvironment velvetEnvironment;
   private ThreadLocal<IVelvet> velvetTL = new ThreadLocal<>();
-  
+
   public VelvetTransactionModule(String velvetUrl) {
     velvetEnvironment = VelvetFactory.open(velvetUrl);
   }
 
   @Override
   public void configure() {
-    
+
     bind(IVelvet.class).toProvider(() -> getVelvet());
     bind(IVelvetEnvironment.class).toInstance(velvetEnvironment);
     bindInterceptor(any(), annotatedWith(Transactional.class), methodInvocation -> {
       Object[] result = new Object[1];
       try {
         velvetEnvironment.execute(velvet -> {
-          velvetTL.set(velvet);        
-          result[0] = methodInvocation.proceed();        
+          velvetTL.set(velvet);
+          result[0] = methodInvocation.proceed();
         });
         return result[0];
       } finally {

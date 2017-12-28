@@ -3,7 +3,6 @@ package com.zakgof.velvetdb.viewer.example;
 import com.google.inject.Injector;
 import com.zakgof.db.velvet.IVelvet;
 import com.zakgof.db.velvet.IVelvetEnvironment;
-import com.zakgof.db.velvet.xodus.XodusVelvetProvider;
 import com.zakgof.velvetdb.viewer.VelvetViewer;
 
 public class Main {
@@ -12,7 +11,6 @@ public class Main {
 
   public static void main(String[] args) throws Throwable {
 
-    Class.forName(XodusVelvetProvider.class.getName());
     Injector injector = VelvetViewer.start(VELVET_PATH, Defs.MODEL);
 
     injector.getInstance(IVelvetEnvironment.class).execute(velvet -> initDb(velvet));
