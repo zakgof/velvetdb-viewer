@@ -64,14 +64,26 @@ public class VelvetViewerService {
         List<Map<String, ?>> multiLinkData = multiLinks.stream().map(link -> ImmutableMap.<String, Object> builder().put("edgeKind", link.getKind()).put("kind", link.getChildEntity().getKind()).put("needsKey", true). // !VelvetUtil.isAutoKeyed(link.getChildClass())).
                 put("picker", pickerData(link)).put("keyz", childrenData(link, value)).put("candidates", candidatesData(link, value)).build()).collect(Collectors.toList());
 
-        List<Map<String, ?>> singleLinkData = model.singleLinks(kind).stream().map(link -> ImmutableMap.of("edgeKind", link.getKind(), "kind", link.getChildEntity().getKind(), "needsKey", true, // !VelvetUtil.isAutoKeyed(link.getChildClass()))
-                                                                                                           "picker", pickerData(link), "value", childData(link, value))).collect(Collectors.toList());
+        List<Map<String, ?>> singleLinkData = model.singleLinks(kind)
+             .stream()
+             .map(link -> ImmutableMap.of(
+                "edgeKind", link.getKind(),
+                "kind", link.getChildEntity().getKind(),
+                "needsKey", true,
+                // !VelvetUtil.isAutoKeyed(link.getChildClass()))
+                "picker", pickerData(link),
+                "value", childData(link, value)))
+             .collect(Collectors.toList());
 
-        Map<String, Object> jmodel = ImmutableMap.<String, Object> builder().put("kind", kind).put("fields", glass.fields()).put("row", row).put("key", key).put("keyField", glass.keyName()).put("multiLinks", multiLinkData).put("singleLinks", singleLinkData).put("deleteUrl", "/viewer/delete/"
-                                                                                                                                                                                                                                                                                   + kind).put("submitUrl", "/viewer/submitchanges/"
-                                                                                                                                                                                                                                                                                                            + kind
-                                                                                                                                                                                                                                                                                                            + "/"
-                                                                                                                                                                                                                                                                                                            + key).put("newRecordUrl", "/viewer/submitnew").put("pickLinkUrl", "/viewer/submitPicklink").put("editUrl", "/viewer/entry").put("kindUrl", "/viewer/kind/").put("rootUrl", "/viewer").build();
+        Map<String, Object> jmodel = ImmutableMap.<String, Object> builder()
+            .put("kind", kind)
+            .put("fields", glass.fields())
+            .put("row", row)
+            .put("key", key)
+            .put("keyField", glass.keyName())
+            .put("multiLinks", multiLinkData)
+            .put("singleLinks", singleLinkData)
+            .build();
 
         return jmodel;
 
@@ -82,7 +94,6 @@ public class VelvetViewerService {
         Glass<CK, CV> childGlass = Glass.of(link.getChildEntity());
         Glass<HK, HV> hostGlass = Glass.of(link.getHostEntity());
 
-        @SuppressWarnings("unchecked")
         IBiSingleLinkDef<CK, CV, HK, HV> backLink = (link instanceof IBiSingleLinkDef) ? ((IBiSingleLinkDef<HK, HV, CK, CV>) link).back() : null;
 
         // TODO: need pagination here as there could be too many records.
@@ -106,9 +117,9 @@ public class VelvetViewerService {
         return childKeyList;
     }
 
-    private <HV, CK, CV> String childData(ISingleLinkDef<?, HV, CK, CV> singleLink, Object entry) {
+    private <HV, CK, CV> String childData(ISingleLinkDef<?, HV, CK, CV> singleLink, Object hostValue) {
         Glass<CK, CV> childGlass = Glass.of(singleLink.getChildEntity());
-        CV childNode = singleLink.single(velvetProvider.get(), (HV) entry);
+        CV childNode = singleLink.single(velvetProvider.get(), (HV) hostValue);
         if (childNode == null)
             return "";
         String childKeyDisplay = childGlass.getKeyStringForValue(childNode);

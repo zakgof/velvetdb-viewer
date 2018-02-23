@@ -46,11 +46,11 @@ public class MainController {
             return service.kind(kind, Integer.parseInt(request.params("offset")), Integer.parseInt(request.params("limit")));
         });
 
-        process("/record/:kind/:id", "record", (request, response) -> {
+        get("/record/:kind/:id", (request, response) -> {
             String kind = request.params("kind");
             String id = request.params("id");
             return service.record(kind, id);
-        });
+        }, new Gson()::toJson);
 
     }
 
