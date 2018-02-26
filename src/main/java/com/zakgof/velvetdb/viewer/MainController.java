@@ -34,7 +34,7 @@ public class MainController {
 
         // Spark.before(new VelvetSparkFilter());
 
-        get("/", (request, response) -> service.kinds(), new Gson()::toJson);
+        get("/", (request, response) -> service.allMetadata(), new Gson()::toJson);
 
         get("/kind/:kind", "kind", (request, response) -> {
             String kind = request.params("kind");

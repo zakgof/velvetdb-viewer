@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -294,6 +295,22 @@ public class VelvetViewerService {
              "count", model.getEntity(kind).size(velvetProvider.get()))
 
          ).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Map<String, ?> allMetadata() {
+        return ImmutableMap.of("kinds", kinds(),
+             "links", linksMetadata()
+        );
+    }
+
+    private List<? extends Map<String, String>> linksMetadata() {
+        return model.entityNames().stream()
+            .flatMap(kind ->
+                Stream.<ILinkDef<?, ?, ?, ?>>concat(model.singleLinks(kind).stream(), model.multiLinks(kind).stream())
+            )
+            .map(link -> ImmutableMap.of("edgeKind", link.getKind(), "parent", link.getHostEntity().getKind(), "child", link.getChildEntity().getKind()))
+            .collect(Collectors.toList());
     }
 
 }
