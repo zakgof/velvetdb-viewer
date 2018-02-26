@@ -1,6 +1,5 @@
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import React, { Component } from 'react';
-import RecLink from "./utils.js";
 
 class KindsPage extends Component {
     componentDidMount() {
@@ -12,7 +11,15 @@ class KindsPage extends Component {
     }
 
     render() {
-        return this.state && <KindsTable columns={["kind", "count"]} data={this.state.kinds} />;
+        return this.state && (
+        	<div>
+        		<p>
+	                <Link to="/">kinds</Link>	                
+	            </p>
+                <KindsTable columns={["kind", "count"]} data={this.state.kinds} />
+            </div>
+        
+        );
     }
 }
 
@@ -28,7 +35,7 @@ class KindsTable extends Component {
                 </thead>
                 <tbody>
                     {this.props.data.map(row => (
-                        <tr key={row}>
+                        <tr key={row.kind}>
                             <td>
                                 <Link to={"/kind/" + row.kind}>{row.kind}</Link>
                             </td>

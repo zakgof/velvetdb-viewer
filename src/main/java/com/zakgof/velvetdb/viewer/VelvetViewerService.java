@@ -61,8 +61,16 @@ public class VelvetViewerService {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         List<IMultiLinkDef<K, V, ?, ?>> multiLinks = (List) model.multiLinks(kind);
 
-        List<Map<String, ?>> multiLinkData = multiLinks.stream().map(link -> ImmutableMap.<String, Object> builder().put("edgeKind", link.getKind()).put("kind", link.getChildEntity().getKind()).put("needsKey", true). // !VelvetUtil.isAutoKeyed(link.getChildClass())).
-                put("picker", pickerData(link)).put("keyz", childrenData(link, value)).put("candidates", candidatesData(link, value)).build()).collect(Collectors.toList());
+        List<Map<String, ?>> multiLinkData = multiLinks.stream()
+            .map(link -> ImmutableMap.<String, Object> builder()
+                .put("edgeKind", link.getKind())
+                .put("kind", link.getChildEntity().getKind())
+                .put("needsKey", true) // !VelvetUtil.isAutoKeyed(link.getChildClass())).
+                .put("picker", pickerData(link))
+                .put("keyz", childrenData(link, value))
+                .put("candidates", candidatesData(link, value))
+                .build())
+            .collect(Collectors.toList());
 
         List<Map<String, ?>> singleLinkData = model.singleLinks(kind)
              .stream()

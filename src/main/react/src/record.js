@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React, { Component } from 'react';
 import RecLink from "./utils.js";
 
@@ -36,8 +37,23 @@ class RecordPage extends Component {
         if (this.state.record) {
     		return (
                 <div>
+                    <p>
+                        <Link to="/">kinds</Link>&nbsp;&gt;&nbsp;
+                        <Link to={"/kind/" + this.state.record.kind}>{this.state.record.kind}</Link>&nbsp;&gt;&nbsp;
+                        <Link to={"/record/" + this.state.record.kind + "/" + this.state.record.key}>{this.state.record.key}</Link>
+                    </p>
+                
                     <PropertiesTable data={this.state.record} />
-                    {this.state.record.singleLinks.map(link => <SingleLinkPane data={link} key={link.edgeKind} />)}
+                    {
+                    	this.state.record.singleLinks.map(link => 
+                            <SingleLinkPane data={link} key={link.edgeKind} />
+                        )
+                    }
+                    {
+		                this.state.record.multiLinks.map(link => 
+		                    <MultiLinkPane data={link} key={link.edgeKind} />
+		                )
+	                }
                 </div>
 	        );
 	    } else {
@@ -80,6 +96,26 @@ class SingleLinkPane extends Component {
                 <p>
                     {this.props.data.edgeKind} ({this.props.data.kind}) ---&gt; <RecLink kind={this.props.data.kind} id={this.props.data.value} />
                 </p>
+            </div>
+        );
+    }
+}
+
+class MultiLinkPane extends Component {
+    render() {
+        console.log(this.props.data.keyz);
+        return (
+            <div>
+                <p>
+                    {this.props.data.edgeKind} ({this.props.data.kind}) ---&gt;
+                </p>
+                <table className="pure-table pure-table-bordered">
+                    <tbody>
+	                    {this.props.data.keyz.map(key => (
+	                    	<tr key={key}><td><RecLink kind={this.props.data.kind} id={key} /></td></tr>
+	                    ))}
+                    </tbody>
+                </table>    
             </div>
         );
     }
