@@ -304,12 +304,17 @@ public class VelvetViewerService {
         );
     }
 
-    private List<? extends Map<String, String>> linksMetadata() {
+    private List<? extends Map<String, Object>> linksMetadata() {
         return model.entityNames().stream()
             .flatMap(kind ->
                 Stream.<ILinkDef<?, ?, ?, ?>>concat(model.singleLinks(kind).stream(), model.multiLinks(kind).stream())
             )
-            .map(link -> ImmutableMap.of("edgeKind", link.getKind(), "parent", link.getHostEntity().getKind(), "child", link.getChildEntity().getKind()))
+            .map(link -> ImmutableMap.<String, Object>of(
+                "edgeKind", link.getKind(),
+                "parent", link.getHostEntity().getKind(),
+                "child", link.getChildEntity().getKind(),
+                "multi", link instanceof IMultiLinkDef ? "true" : "false"
+             ))
             .collect(Collectors.toList());
     }
 

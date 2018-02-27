@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { Component } from 'react';
-import {ReactCytoscape, cytoscape}  from 'react-cytoscape';
+import {ReactCytoscape}  from 'react-cytoscape';
 
 
 class KindsPage extends Component {
@@ -25,8 +25,30 @@ class KindsPage extends Component {
                 <KindsTable columns={["kind", "count"]} data={this.state.data.kinds} />
                 <div style={{height: "480px"}}>
 	                <ReactCytoscape containerID="cy"
-						elements={this.getElements()}					
-						cytoscapeOptions={{ wheelSensitivity: 0.1 }} />
+						elements={this.getElements()}
+	                    style={
+	                		[
+	                			{selector: "edge", css: {
+	                				"curve-style": "bezier",
+	                				"arrow-scale" : 2,
+	                				"target-arrow-color": "#8ba",
+	                				"source-arrow-color": "#8ba",
+	                				"line-color" : "#8ba",
+	                				"target-arrow-shape" : "triangle-tee",
+	                				"target-arrow-fill" : "filled"
+	                			}},
+	                			{selector: "edge[multi='true']", css: {
+	                				"target-arrow-shape" : "triangle",
+	                			}},
+	                			{selector: "node", css: {
+	                				"shape": "ellipse",
+	                				"background-color": "#88a",
+	                				"color" : "#99b",
+	                				'content': function (ele) { return ele.data('label') || ele.data('id') }
+	                			}}	                			
+	                		]
+	                	}
+						cytoscapeOptions={{ wheelSensitivity: 0.1}} />
                 </div>
             </div>
         
@@ -35,8 +57,8 @@ class KindsPage extends Component {
     
     getElements() {
 		return {
-			nodes: this.state.data.kinds.map(knd => ({data: { id: knd.kind, name: knd.kind + " (" + knd.count + ")"}})),				
-			edges: this.state.data.links.map(lnk => ({data: { source: lnk.parent, target: lnk.child}}))
+			nodes: this.state.data.kinds.map(knd => ({data: { id: knd.kind, label: knd.kind + " (" + knd.count + ")"}})),				
+			edges: this.state.data.links.map(lnk => ({data: { source: lnk.parent, target: lnk.child, multi:lnk.multi}}))
 		};
 	}
     
