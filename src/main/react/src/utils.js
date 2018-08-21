@@ -1,14 +1,9 @@
 import {Link} from "react-router-dom";
 import React, { Component } from 'react';
 
-class RecLink extends Component {
-    render() {
-        return (
-            <Link to={"/record/" + this.props.kind + "/" + this.props.id}>
-                <span>{this.props.id}</span>
-            </Link>
-        );
-    }
-}
+export const RecLink = (props) => <Link to={"/record/" + props.kind + "/" + props.id}>{props.id}</Link>
+
+export const EntityLink = (props) => <Link to={"/kind/" + props.kind}>{props.kind}</Link>
 
 export default RecLink;
+

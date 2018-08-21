@@ -25,8 +25,8 @@ import com.zakgof.db.velvet.link.IBiSingleLinkDef;
 import com.zakgof.db.velvet.link.ILinkDef;
 import com.zakgof.db.velvet.link.IMultiLinkDef;
 import com.zakgof.db.velvet.link.ISingleLinkDef;
-import com.zakgof.db.velvet.query.IRangeQuery;
-import com.zakgof.db.velvet.query.Queries;
+import com.zakgof.db.velvet.query.IKeyQuery;
+import com.zakgof.db.velvet.query.KeyQueries;
 
 /**
  *
@@ -106,14 +106,14 @@ public class VelvetViewerService {
         IBiSingleLinkDef<CK, CV, HK, HV> backLink = (link instanceof IBiSingleLinkDef) ? ((IBiSingleLinkDef<HK, HV, CK, CV>) link).back() : null;
 
         // TODO: need pagination here as there could be too many records.
-        List<Map<String, Object>> candidateList = link.getChildEntity().keys(velvetProvider.get()).stream().map(key -> pickerEntry(hostGlass, childGlass, key, link, backLink)).collect(Collectors.toList());
+        List<Map<String, Object>> candidateList = link.getChildEntity().batchGetAllKeys(velvetProvider.get()).stream().map(key -> pickerEntry(hostGlass, childGlass, key, link, backLink)).collect(Collectors.toList());
         return candidateList;
     }
 
     private <CK, CV, HK, HV> Map<String, Object> pickerEntry(Glass<HK, HV> hostGlass, Glass<CK, CV> childGlass, CK key, ILinkDef<HK, HV, CK, CV> link, IBiSingleLinkDef<CK, CV, HK, HV> backLink) {
         Builder<String, Object> builder = ImmutableMap.<String, Object> builder().put("key", childGlass.keyToDisplay(key));
         if (backLink != null) {
-            HK hostKey = backLink.singleKey(velvetProvider.get(), key);
+            HK hostKey = backLink.key(velvetProvider.get(), key);
             if (hostKey != null)
                 builder.put("hostKey", hostGlass.keyToDisplay(hostKey));
         }
@@ -122,13 +122,13 @@ public class VelvetViewerService {
 
     private <HV, CK, CV> List<String> childrenData(IMultiLinkDef<?, HV, CK, CV> multiLink, HV node) {
         Glass<CK, CV> childGlass = Glass.of(multiLink.getChildEntity());
-        List<String> childKeyList = multiLink.multi(velvetProvider.get(), node).stream().map(o -> childGlass.getKeyStringForValue(o)).collect(Collectors.toList());
+        List<String> childKeyList = multiLink.get(velvetProvider.get(), node).stream().map(o -> childGlass.getKeyStringForValue(o)).collect(Collectors.toList());
         return childKeyList;
     }
 
     private <HV, CK, CV> String childData(ISingleLinkDef<?, HV, CK, CV> singleLink, Object hostValue) {
         Glass<CK, CV> childGlass = Glass.of(singleLink.getChildEntity());
-        CV childNode = singleLink.single(velvetProvider.get(), (HV) hostValue);
+        CV childNode = singleLink.get(velvetProvider.get(), (HV) hostValue);
         if (childNode == null)
             return "";
         String childKeyDisplay = childGlass.getKeyStringForValue(childNode);
@@ -142,7 +142,7 @@ public class VelvetViewerService {
         // ManyToMany - all except mine, mark busy in another way
 
         IEntityDef<CK, CV> childEntity = link.getChildEntity();
-        Collection<CK> keys = childEntity.keys(velvetProvider.get());
+        Collection<CK> keys = childEntity.batchGetAllKeys(velvetProvider.get());
         Glass<CK, CV> glass = Glass.of(childEntity);
 
         Predicate<Object> filter = (key -> true);
@@ -188,11 +188,11 @@ public class VelvetViewerService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <K, V> List<V> range(IEntityDef<K, V> entity, int offset, int limit) {
         if (entity instanceof ISortableEntityDef) {
-            IRangeQuery query = Queries.range(offset, limit);
-            return ((ISortableEntityDef) entity).get(velvetProvider.get(), query);
+            IKeyQuery<K> query = KeyQueries.<K>builder().limit(limit).offset(offset).build();
+            return ((ISortableEntityDef) entity).queryList(velvetProvider.get(), query);
         } else {
-            List<K> keys = entity.keys(velvetProvider.get()).subList(offset, offset + limit);
-            return entity.get(velvetProvider.get(), keys);
+            List<K> keys = entity.batchGetAllKeys(velvetProvider.get()).subList(offset, offset + limit);
+            return entity.batchGetList(velvetProvider.get(), keys);
         }
     }
 

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { Component } from 'react';
-import RecLink from "./utils.js";
+import RecLink, { EntityLink} from "./utils.js";
+import { Breadcrumb, Segment, Label } from 'semantic-ui-react';
 
 class RecordPage extends Component {
 	
@@ -36,25 +37,29 @@ class RecordPage extends Component {
     	console.log(this.state);
         if (this.state.record) {
     		return (
-                <div>
-                    <p>
-                        <Link to="/">kinds</Link>&nbsp;&gt;&nbsp;
-                        <Link to={"/kind/" + this.state.record.kind}>{this.state.record.kind}</Link>&nbsp;&gt;&nbsp;
-                        <Link to={"/record/" + this.state.record.kind + "/" + this.state.record.key}>{this.state.record.key}</Link>
-                    </p>
+                <Segment compact>
+                    <div>
+                     <Breadcrumb size="big">
+                        <Breadcrumb.Section link><Link to="/">kinds</Link></Breadcrumb.Section>
+                        <Breadcrumb.Divider />
+                        <Breadcrumb.Section link><EntityLink kind={this.state.record.kind} /></Breadcrumb.Section>
+                        <Breadcrumb.Divider />
+                        <Breadcrumb.Section active><RecLink kind={this.state.record.kind} id={this.state.record.key} /></Breadcrumb.Section>
+                  </Breadcrumb>
+                    
+                   </div>
                 
                     <PropertiesTable data={this.state.record} />
-                    {
-                    	this.state.record.singleLinks.map(link => 
+                    
+                    {this.state.record.singleLinks.map(link => 
                             <SingleLinkPane data={link} key={link.edgeKind} />
-                        )
-                    }
-                    {
-		                this.state.record.multiLinks.map(link => 
-		                    <MultiLinkPane data={link} key={link.edgeKind} />
-		                )
-	                }
-                </div>
+                     )}
+
+                      {this.state.record.multiLinks.map(link => 
+                          <MultiLinkPane data={link} key={link.edgeKind} />
+                      )}
+	                   
+                </Segment>
 	        );
 	    } else {
 	    	return (
@@ -68,11 +73,11 @@ class PropertiesTable extends Component {
     render() {
         console.log(this.props.data.row);
         return (
-            <table className="pure-table pure-table-bordered">
+            <table className="ui collapsing table">
                 <thead>
                     <tr>
-                        <td>property</td>
-                        <td>value</td>
+                        <th>property</th>
+                        <th>value</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,37 +93,37 @@ class PropertiesTable extends Component {
     }
 }
 
-class SingleLinkPane extends Component {
-    render() {
-        console.log(this.props.data);
-        return (
-            <div>
-                <p>
-                    {this.props.data.edgeKind} ({this.props.data.kind}) ---&gt; <RecLink kind={this.props.data.kind} id={this.props.data.value} />
-                </p>
-            </div>
-        );
-    }
-}
+const SingleLinkPane = (props) =>
+    
+            <Segment>
+                
+                  <Label>{props.data.edgeKind}</Label> <i className="ui arrow right icon small" />
+                  <EntityLink kind={props.data.kind}/>
+                  <div style={{"text-align": "right", "width" : "100%"}}>
+                     <table className="ui collapsing table"><tbody><tr><td>
+                        <RecLink kind={props.data.kind} id={props.data.value} />
+                     </td></tr></tbody></table>
+                
+                  </div>
+            </Segment>
+    
 
-class MultiLinkPane extends Component {
-    render() {
-        console.log(this.props.data.keyz);
-        return (
-            <div>
-                <p>
-                    {this.props.data.edgeKind} ({this.props.data.kind}) ---&gt;
-                </p>
-                <table className="pure-table pure-table-bordered">
+const MultiLinkPane = (props) =>
+            <Segment>
+                
+                 <Label>{props.data.edgeKind}</Label> <i className="ui arrow right icon small" />
+                
+                <EntityLink kind={props.data.kind}/>
+                
+                <table className="ui collapsing table">
                     <tbody>
-	                    {this.props.data.keyz.map(key => (
-	                    	<tr key={key}><td><RecLink kind={this.props.data.kind} id={key} /></td></tr>
+	                    {props.data.keyz.map(key => (
+	                    	<tr key={key}><td><RecLink kind={props.data.kind} id={key} /></td></tr>
 	                    ))}
                     </tbody>
                 </table>    
-            </div>
-        );
-    }
-}
+                
+            </Segment>
+     
 
 export default RecordPage;

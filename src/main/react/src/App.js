@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import React, { Component } from "react";
-import "./pure-min.css";
 import "./App.css";
 import KindsPage from "./landing.js";
 import KindPage from "./kind.js";
