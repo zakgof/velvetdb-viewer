@@ -15,7 +15,7 @@ class RecordPage extends Component {
          var key = props.match.params.key;
          var axios = require("axios");
          axios
-             .get("http://localhost:4567/record/" + kind + "/" + key)
+             .get("/api/record/" + kind + "/" + key)
              .then(response => this.setState({ record: response.data }))
              .catch(err => console.error(err));
     }

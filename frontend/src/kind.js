@@ -9,7 +9,7 @@ class KindPage extends Component {
         var kind = this.props.match.params.kind;
         var axios = require("axios");
         axios
-            .get("http://localhost:4567/kind/" + kind)
+            .get("/api/kind/" + kind)
             .then(response => this.setState({ kind: response.data }))
             .catch(err => console.error(err));
     }

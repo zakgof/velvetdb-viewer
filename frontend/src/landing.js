@@ -8,7 +8,7 @@ class KindsPage extends Component {
     componentDidMount() {
         var axios = require("axios");
         axios
-            .get("http://localhost:4567/")
+            .get("/api")
             .then(response => this.setState({ data: response.data }))
             .catch(err => console.error(err));
     }
