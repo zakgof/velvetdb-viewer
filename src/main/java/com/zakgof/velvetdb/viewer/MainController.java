@@ -13,10 +13,12 @@ public class MainController {
     @Inject
     private VelvetViewerService service;
 
-    public MainController() {
+    public MainController(int port) {
 
         Spark.staticFileLocation("/website");
         Spark.before( (request, response) -> response.header("Access-Control-Allow-Origin", "http://localhost:3000"));
+
+        Spark.port(port);
 
         // Spark.before(new VelvetSparkFilter());
 

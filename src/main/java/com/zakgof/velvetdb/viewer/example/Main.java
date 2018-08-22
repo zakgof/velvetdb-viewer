@@ -11,7 +11,7 @@ public class Main {
 
   public static void main(String[] args) throws Throwable {
 
-    Injector injector = VelvetViewer.start(VELVET_PATH, Defs.MODEL);
+    Injector injector = VelvetViewer.start(VELVET_PATH, Defs.MODEL, 4567);
 
     injector.getInstance(IVelvetEnvironment.class).execute(velvet -> initDb(velvet));
 
