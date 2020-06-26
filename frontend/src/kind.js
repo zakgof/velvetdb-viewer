@@ -7,26 +7,23 @@ import { Breadcrumb, Segment} from 'semantic-ui-react';
 class KindPage extends Component {
     componentDidMount() {
         var kind = this.props.match.params.kind;
-        var axios = require("axios");
-        axios
-            .get("/api/kind/" + kind)
-            .then(response => this.setState({ kind: response.data }))
-            .catch(err => console.error(err));
+        this.props.ajax("get", "/kind/" + kind, null,
+            response => this.setState({ kind: response.data }));
     }
 
     render() {
         return (
             this.state && (
                 <Segment>
-	           
-	                
-	                <Breadcrumb size="big">
+               
+                    
+                    <Breadcrumb size="big">
                   <Breadcrumb.Section link><Link to="/">kinds</Link></Breadcrumb.Section>
                   <Breadcrumb.Divider />
                   <Breadcrumb.Section active><EntityLink kind={this.state.kind.kind} /></Breadcrumb.Section>
                 </Breadcrumb>
-	                
-	       
+                    
+           
                
 
                     <table className="ui collapsing table">

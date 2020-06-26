@@ -4,39 +4,36 @@ import RecLink, { EntityLink} from "./utils.js";
 import { Breadcrumb, Segment, Label } from 'semantic-ui-react';
 
 class RecordPage extends Component {
-	
+
     constructor(props) {
-	    super(props);
-		this.state = {record: null};
-	}
-	
+        super(props);
+        this.state = {record: null};
+    }
+
     runAjax(props) {
-    	 var kind = props.match.params.kind;
+         var kind = props.match.params.kind;
          var key = props.match.params.key;
-         var axios = require("axios");
-         axios
-             .get("/api/record/" + kind + "/" + key)
-             .then(response => this.setState({ record: response.data }))
-             .catch(err => console.error(err));
+         this.props.ajax("get", "/record/" + kind + "/" + key, null,
+             response => this.setState({ record: response.data }));
     }
-	
-    componentWillReceiveProps(props) {
-    	this.setState({record : null});
-    	console.log("componentWillReceiveProps, state=");
-    	console.log(this.state);    	 
-    	this.runAjax(props);
-    }
-	
+    
+    /* componentWillReceiveProps(props) {
+        this.setState({record : null});
+        console.log("componentWillReceiveProps, state=");
+        console.log(this.state);         
+        this.runAjax(props);
+    }*/
+    
     componentDidMount() {
-    	this.runAjax(this.props);
+        this.runAjax(this.props);
     }
 
     render() {
-    	
-    	console.log("RENDER, state=");
-    	console.log(this.state);
+        
+        console.log("RENDER, state=");
+        console.log(this.state);
         if (this.state.record) {
-    		return (
+            return (
                 <Segment compact>
                     <div>
                      <Breadcrumb size="big">
@@ -58,14 +55,14 @@ class RecordPage extends Component {
                       {this.state.record.multiLinks.map(link => 
                           <MultiLinkPane data={link} key={link.edgeKind} />
                       )}
-	                   
+                       
                 </Segment>
-	        );
-	    } else {
-	    	return (
+            );
+        } else {
+            return (
                 <p>LOADING...</p>
-	        );
-	    }
+            );
+        }
     }
 }
 
@@ -117,9 +114,9 @@ const MultiLinkPane = (props) =>
                 
                 <table className="ui collapsing table">
                     <tbody>
-	                    {props.data.keyz.map(key => (
-	                    	<tr key={key}><td><RecLink kind={props.data.kind} id={key} /></td></tr>
-	                    ))}
+                        {props.data.keyz.map(key => (
+                            <tr key={key}><td><RecLink kind={props.data.kind} id={key} /></td></tr>
+                        ))}
                     </tbody>
                 </table>    
                 

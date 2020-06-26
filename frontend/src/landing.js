@@ -3,26 +3,21 @@ import React, { Component } from 'react';
 import Diagram  from './diagram.js';
 import { Breadcrumb, Segment, Label } from 'semantic-ui-react';
 
-
 class KindsPage extends Component {
     componentDidMount() {
-        var axios = require("axios");
-        axios
-            .get("/api")
-            .then(response => this.setState({ data: response.data }))
-            .catch(err => console.error(err));
+        this.props.ajax("get", "", null, response => this.setState({ data: response.data }));
     }
 
     render() {
-    	if (this.state) {
-    		console.log(this.state);
-    	}
+        if (this.state) {
+            console.log(this.state);
+        }
         return this.state && (
-        	<Segment compact>
-        		<Breadcrumb size="big">
+            <Segment compact>
+                <Breadcrumb size="big">
                 <Breadcrumb.Section active><Link to="/">kinds</Link></Breadcrumb.Section>
-	          </Breadcrumb>
-	                
+              </Breadcrumb>
+                    
                 <KindsTable columns={["kind", "count"]} data={this.state.data.kinds} />
                 
                 <Diagram data={this.state.data} />
@@ -34,18 +29,18 @@ class KindsPage extends Component {
    
     
     cyRef(cy) {
-		this.cy = cy;
-		cy.on('tap', 'node', function (evt) {
-			var node = evt.target;
-			console.log('tapped ' + node.id());
-		});
-	}
+        this.cy = cy;
+        cy.on('tap', 'node', function (evt) {
+            var node = evt.target;
+            console.log('tapped ' + node.id());
+        });
+    }
 
-	handleEval() {
-		const cy = this.cy;
-		const str = this.text.value;
-		eval(str);
-	}
+    handleEval() {
+        const cy = this.cy;
+        const str = this.text.value;
+        eval(str);
+    }
 }
 
 class KindsTable extends Component {

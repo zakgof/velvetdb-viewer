@@ -2,10 +2,8 @@ package com.zakgof.velvetdb.viewer;
 
 import static spark.Spark.get;
 
-import javax.inject.Inject;
-
 import com.google.gson.Gson;
-
+import javax.inject.Inject;
 import spark.Spark;
 
 public class MainController {
@@ -14,11 +12,11 @@ public class MainController {
     private VelvetViewerService service;
 
     public MainController(int port) {
-
+        Spark.port(port);
         Spark.staticFileLocation("/website");
         Spark.before( (request, response) -> response.header("Access-Control-Allow-Origin", "http://localhost:3000"));
 
-        Spark.port(port);
+
 
         // Spark.before(new VelvetSparkFilter());
 
