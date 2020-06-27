@@ -29,6 +29,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'javax.transaction:javax.transaction-api:1.2-b03'
     compileOnly 'javax.interceptor:javax.interceptor-api:1.2.2'
+    
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+	annotationProcessor 'org.projectlombok:lombok:1.18.8'
+    
     project(':frontend')
 }
 

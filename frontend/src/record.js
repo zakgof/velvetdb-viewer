@@ -10,22 +10,23 @@ class RecordPage extends Component {
         this.state = {record: null};
     }
 
-    runAjax(props) {
-         var kind = props.match.params.kind;
-         var key = props.match.params.key;
-         this.props.ajax("get", "/record/" + kind + "/" + key, null,
-             response => this.setState({ record: response.data }));
+    runAjax() {
+         var kind = this.props.match.params.kind;
+         var key = this.props.match.params.key;
+         this.props.ajax("get", "/record/" + kind + "/" + key, null, response => this.setState({ record: response.data }));
     }
-    
-    /* componentWillReceiveProps(props) {
-        this.setState({record : null});
-        console.log("componentWillReceiveProps, state=");
-        console.log(this.state);
-        this.runAjax(props);
-    }*/
-    
+
+    componentDidUpdate(oldProps) {
+        console.log("componentDidUpdate, state=");
+        if (oldProps.match.params.key !== this.props.match.params.key) {
+			console.log("MISMATCH");
+            this.runAjax();
+		}    
+	}
+
     componentDidMount() {
-        this.runAjax(this.props);
+        console.log("did mount");
+		this.runAjax();
     }
 
     render() {
@@ -36,14 +37,11 @@ class RecordPage extends Component {
             return (
                 <Segment compact>
                     <div>
-                     <Breadcrumb size="big">
-                        <Breadcrumb.Section link><Link to="/">kinds</Link></Breadcrumb.Section>
-                        <Breadcrumb.Divider />
-                        <Breadcrumb.Section link><EntityLink kind={this.state.record.kind} /></Breadcrumb.Section>
-                        <Breadcrumb.Divider />
-                        <Breadcrumb.Section active><RecLink kind={this.state.record.kind} id={this.state.record.key} /></Breadcrumb.Section>
-                  </Breadcrumb>
-                    
+                        <Link to="/">kinds</Link>
+                         &nbsp;&#47;&nbsp;
+                        <EntityLink kind={this.state.record.kind} />
+                         &nbsp;&#47;&nbsp;
+                        <RecLink kind={this.state.record.kind} id={this.state.record.key} />
                    </div>
                 
                     <PropertiesTable data={this.state.record} />
@@ -92,9 +90,9 @@ class PropertiesTable extends Component {
 
 const SingleLinkPane = (props) =>
     <Segment>
-          <p><Label>{props.data.edgeKind}</Label></p>
+          <div><Label>{props.data.edgeKind}</Label></div>
           <p><EntityLink kind={props.hostKind}/> <i className="ui arrow right icon small" /> <EntityLink kind={props.data.kind}/></p>
-          <div style={{"text-align": "right", "width" : "100%"}}>
+          <div style={{"textAlign": "right", "width" : "100%"}}>
              <table className="ui collapsing table"><tbody><tr><td>
                 <RecLink kind={props.data.kind} id={props.data.value} />
              </td></tr></tbody></table>
