@@ -1,9 +1,22 @@
 package com.zakgof.velvetdb.viewer.example;
 
+import static java.util.stream.Collectors.toList;
+
+import com.google.common.base.Charsets;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Injector;
 import com.zakgof.db.velvet.IVelvet;
 import com.zakgof.db.velvet.IVelvetEnvironment;
 import com.zakgof.velvetdb.viewer.VelvetViewer;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.StreamSupport;
+import org.apache.commons.io.IOUtils;
 
 public class Main {
 
@@ -17,62 +30,55 @@ public class Main {
 
     }
 
-    private static void initDb(IVelvet velvet) {
+    private static void initDb(IVelvet velvet) throws IOException {
 
         if (Defs.BOOK.size(velvet) > 0)
             return;
 
-        Book book1 = new Book("isbn-1-1-1", "Book name 1");
-        Book book2 = new Book("isbn-1-1-2", "Book name 2");
-        Book book3 = new Book("isbn-1-1-3", "Book name 3");
-        Book book4 = new Book("isbn-1-1-4", "Book name 4");
-        Book book5 = new Book("isbn-1-1-5", "Book name 5");
+        String url = "http://openlibrary.org/search.json?subject=java+programming";
+        String jsontext = IOUtils.toString(URI.create(url), Charsets.UTF_8);
+        JsonElement root = new JsonParser().parse(jsontext);
+        JsonArray docs = root.getAsJsonObject().get("docs").getAsJsonArray();
+        for (JsonElement bookElement : docs) {
+            JsonObject bookObj = bookElement.getAsJsonObject();
+            String title = bookObj.get("title").getAsString();
+            JsonElement yearElement = bookObj.get("first_publish_year");
+            int year = yearElement == null ? 1800 : yearElement.getAsInt();
+            List<String> authorNames = strarray(bookObj, "author_name");
+            List<String> publisherNames = strarray(bookObj, "publisher");
+            List<String> isbns = strarray(bookObj, "isbn");
+            if (isbns.isEmpty())
+                continue;
+            String isbn = isbns.get(0);
 
-        Defs.BOOK.put(velvet, book1);
-        Defs.BOOK.put(velvet, book2);
-        Defs.BOOK.put(velvet, book3);
-        Defs.BOOK.put(velvet, book4);
-        Defs.BOOK.put(velvet, book5);
-
-        for (int i = 6; i < 1000; i++) {
-            Book book = new Book("isbn-" + i, "Book name " + i);
+            Book book = new Book(isbn, title, year);
             Defs.BOOK.put(velvet, book);
-        }
+            for (String authorName : authorNames) {
+                Person author = new Person(authorName);
+                if (!Defs.AUTHOR.containsKey(velvet, authorName)) {
+                    Defs.AUTHOR.put(velvet, author);
+                }
+                Defs.AUTHOR_BOOK.connect(velvet, author, book);
+            }
+            for (String publisherName : publisherNames) {
+                if (!Defs.PUBLISHER.containsKey(velvet, publisherName)) {
+                    Defs.PUBLISHER.put(velvet, publisherName);
+                }
+                Defs.PUBLISHER_BOOK.connect(velvet, publisherName, book);
+            }
 
-        Person wayne = new Person("John", "Wayne");
-        Person obama = new Person("Barack", "Obama");
-        Person bush = new Person("George", "Bush");
-        Person bill = new Person("Bill", "Clinton");
-        Person hillary = new Person("Hillary", "Clinton");
+            System.out.println(book + " " + authorNames);
 
-        Defs.PERSON.put(velvet, wayne);
-        Defs.PERSON.put(velvet, obama);
-        Defs.PERSON.put(velvet, bush);
-        Defs.PERSON.put(velvet, bill);
-        Defs.PERSON.put(velvet, hillary);
-
-        addPassport(velvet, wayne, "JW12345");
-        addPassport(velvet, obama, "BO99999");
-        addPassport(velvet, bush, "GB66666");
-        addPassport(velvet, bill, "BC43424");
-        addPassport(velvet, hillary, "HC98765");
-
-        Defs.AUTHOR_BOOK.connect(velvet, obama, book1);
-        Defs.AUTHOR_BOOK.connect(velvet, obama, book2);
-        Defs.AUTHOR_BOOK.connect(velvet, obama, book3);
-
-        Defs.AUTHOR_BOOK.connect(velvet, bill, book4);
-
-        for (int i = 1; i < 1000; i++) {
-            Person person = new Person("Name-" + i, "LastName-" + i);
-            Defs.PERSON.put(velvet, person);
         }
 
     }
 
-    private static void addPassport(IVelvet velvet, Person person, String passportNo) {
-        Passport passport = new Passport(passportNo);
-        Defs.PASSPORT.put(velvet, passport);
-        Defs.PERSON_PASSPORT.connect(velvet, person, passport);
+    private static List<String> strarray(JsonObject obj, String field) {
+        JsonElement fieldElement = obj.get(field);
+        if (fieldElement == null)
+            return Collections.emptyList();
+        return StreamSupport.stream(fieldElement.getAsJsonArray().spliterator(), false)
+            .map(JsonElement::getAsString)
+            .collect(toList());
     }
 }

@@ -20,7 +20,7 @@ class RecordPage extends Component {
     /* componentWillReceiveProps(props) {
         this.setState({record : null});
         console.log("componentWillReceiveProps, state=");
-        console.log(this.state);         
+        console.log(this.state);
         this.runAjax(props);
     }*/
     
@@ -49,7 +49,7 @@ class RecordPage extends Component {
                     <PropertiesTable data={this.state.record} />
                     
                     {this.state.record.singleLinks.map(link => 
-                            <SingleLinkPane data={link} key={link.edgeKind} />
+                          <SingleLinkPane data={link} key={link.edgeKind} hostKind={this.props.match.params.kind} />
                      )}
 
                       {this.state.record.multiLinks.map(link => 
@@ -91,19 +91,15 @@ class PropertiesTable extends Component {
 }
 
 const SingleLinkPane = (props) =>
-    
-            <Segment>
-                
-                  <Label>{props.data.edgeKind}</Label> <i className="ui arrow right icon small" />
-                  <EntityLink kind={props.data.kind}/>
-                  <div style={{"text-align": "right", "width" : "100%"}}>
-                     <table className="ui collapsing table"><tbody><tr><td>
-                        <RecLink kind={props.data.kind} id={props.data.value} />
-                     </td></tr></tbody></table>
-                
-                  </div>
-            </Segment>
-    
+    <Segment>
+          <p><Label>{props.data.edgeKind}</Label></p>
+          <p><EntityLink kind={props.hostKind}/> <i className="ui arrow right icon small" /> <EntityLink kind={props.data.kind}/></p>
+          <div style={{"text-align": "right", "width" : "100%"}}>
+             <table className="ui collapsing table"><tbody><tr><td>
+                <RecLink kind={props.data.kind} id={props.data.value} />
+             </td></tr></tbody></table>
+          </div>
+    </Segment>
 
 const MultiLinkPane = (props) =>
             <Segment>

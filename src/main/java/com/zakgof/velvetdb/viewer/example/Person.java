@@ -1,21 +1,18 @@
 package com.zakgof.velvetdb.viewer.example;
 
-import java.io.Serializable;
+import com.zakgof.db.velvet.annotation.Key;
 
-@SuppressWarnings("serial")
-public class Person implements Serializable {
+public class Person {
 
-    private String firstName;
+    @Key
+    private String name;
 
-    private String lastName;
-
-    public Person(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Person(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return lastName + " " + firstName;
+        return name;
     }
 }

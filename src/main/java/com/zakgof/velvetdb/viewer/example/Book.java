@@ -1,5 +1,6 @@
 package com.zakgof.velvetdb.viewer.example;
 
+import com.zakgof.db.velvet.annotation.Index;
 import com.zakgof.db.velvet.annotation.SortedKey;
 import java.io.Serializable;
 
@@ -11,13 +12,17 @@ public class Book implements Serializable {
 
     private String title;
 
-    public Book(String isbn, String title) {
+    @Index
+    private int year;
+
+    public Book(String isbn, String title, int year) {
         this.isbn = isbn;
         this.title = title;
+        this.year = year;
     }
 
     @Override
     public String toString() {
-        return title + "(" + isbn + ")";
+        return isbn + ": " + title + " (" + year + ")";
     }
 }
