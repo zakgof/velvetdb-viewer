@@ -65,7 +65,7 @@ class PropertiesTable extends Component {
     render() {
         console.log(this.props.data.row);
         return (
-            <Table color="teal">
+            <Table color="teal" stackable={false}>
                 <Table.Body>
                     {Object.keys(this.props.data.row).map(propname => (
                         <Table.Row key={propname}>
