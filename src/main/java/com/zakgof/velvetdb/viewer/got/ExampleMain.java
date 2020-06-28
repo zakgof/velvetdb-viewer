@@ -49,7 +49,8 @@ public class ExampleMain {
         // Pass 1 : Characters
         for (JsonElement characterElement : jsonArray(charRoot, "characters")) {
             String name = jsonStr(characterElement, "characterName");
-            String house = jsonStr(characterElement, "house");
+            JsonElement houses = jsonElement(characterElement, "houseName");
+            String house = (houses != null && houses.isJsonArray()) ? houses.getAsJsonArray().get(0).getAsString() : jsonStr(characterElement, "houseName");
             String actor = jsonStr(characterElement, "actorName");
             String characterLink = jsonStr(characterElement, "characterLink");
             String actorLink = jsonStr(characterElement, "actorLink");
@@ -120,14 +121,13 @@ public class ExampleMain {
                         }
                     }
                 }
-                for (Location loc : locations) {
-                    GOT.LOCATION.put(velvet, loc);
-                    GOT.EPISODE_LOCATIONS.connect(velvet, epi, loc);
-                }
-                for (String ch : characters) {
-                    GOT.EPISODE_CHARACTERS.connectKeys(velvet, epi.toString(), ch);
-                }
-
+            }
+            for (Location loc : locations) {
+                GOT.LOCATION.put(velvet, loc);
+                GOT.EPISODE_LOCATIONS.connect(velvet, epi, loc);
+            }
+            for (String ch : characters) {
+                GOT.EPISODE_CHARACTERS.connectKeys(velvet, epi.toString(), ch);
             }
 
         }

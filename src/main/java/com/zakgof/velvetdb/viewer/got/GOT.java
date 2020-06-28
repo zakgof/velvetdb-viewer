@@ -20,7 +20,7 @@ public class GOT {
     public static final IMultiLinkDef<String, Charact, String, Charact> HAD_SEX = Links.multi(CHARACTER, CHARACTER, "had_sex");
 
     public static final IBiManyToManyLinkDef<String, Episode, String, Charact> EPISODE_CHARACTERS = Links.biManyToMany(EPISODE, CHARACTER, "episode_characters", "appears_in_episodes");
-    public static final IBiManyToManyLinkDef<String, Episode, ?, Location> EPISODE_LOCATIONS = Links.biManyToMany(EPISODE, LOCATION);
+    public static final IBiManyToManyLinkDef<String, Episode, ?, Location> EPISODE_LOCATIONS = Links.biManyToMany(EPISODE, LOCATION, "episode_locations", "location_episodes");
 
 
     public static final ViewerDataModel MODEL = ViewerDataModel.builder().

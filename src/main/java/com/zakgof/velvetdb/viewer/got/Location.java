@@ -3,9 +3,7 @@ package com.zakgof.velvetdb.viewer.got;
 import com.zakgof.db.velvet.annotation.Key;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 public class Location {
@@ -13,9 +11,16 @@ public class Location {
     private final String location;
     private final String sublocation;
 
+    public Location(String location, String sublocation) {
+        super();
+        this.location = location == null ? "" : location.trim();
+        this.sublocation = sublocation == null ? "" : sublocation.trim();
+    }
+
     @Key
     @Override
     public String toString() {
-        return location + (sublocation == null ? "" : " / " + sublocation);
+        return location + (sublocation.isEmpty() ? "" : " / " + sublocation);
     }
+
 }

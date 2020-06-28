@@ -1,5 +1,6 @@
 package com.zakgof.velvetdb.viewer.got;
 
+import com.zakgof.db.velvet.annotation.Index;
 import com.zakgof.db.velvet.annotation.Key;
 import com.zakgof.db.velvet.annotation.Kind;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,8 @@ public class Charact {
     @Key
     private final String name;
     private final Gender gender;
+
+    @Index
     private final String house;
 
     private final String actor;
