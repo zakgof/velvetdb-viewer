@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import React, { Component } from 'react';
+import { RootLink, EntityLink } from "./utils.js";
 import Diagram  from './diagram.js';
-import { Breadcrumb, Segment, Label } from 'semantic-ui-react';
+import { Table, Segment, Label } from 'semantic-ui-react';
 
 class KindsPage extends Component {
     componentDidMount() {
@@ -9,25 +10,17 @@ class KindsPage extends Component {
     }
 
     render() {
-        if (this.state) {
-            console.log(this.state);
-        }
         return this.state && (
-            <Segment compact>
-                <Breadcrumb size="big">
-                <Breadcrumb.Section active><Link to="/">kinds</Link></Breadcrumb.Section>
-              </Breadcrumb>
-                    
+            <>
+                <Label.Group size="large" tag>
+                    <RootLink />
+                </Label.Group>
                 <KindsTable columns={["kind", "count"]} data={this.state.data.kinds} />
-                
                 <Diagram data={this.state.data} />
-             
-            </Segment>
-        
+            </>
         );
     }
-   
-    
+
     cyRef(cy) {
         this.cy = cy;
         cy.on('tap', 'node', function (evt) {
@@ -46,26 +39,19 @@ class KindsPage extends Component {
 class KindsTable extends Component {
     render() {
         return (
-            <table className="ui collapsing table">
-                <thead className="celled">
-                    <tr>
-                        <th>kind</th>
-                        <th>count</th>
-                    </tr>
-                </thead>
+            <Table collapsing celled color="teal">
+                <Table.Header>
+                    <Table.Row><th>kind</th><th>count</th></Table.Row>
+                </Table.Header>
                 <tbody>
                     {this.props.data.map(row => (
                         <tr key={row.kind}>
-                            <td>
-                                <Link to={"/kind/" + row.kind}>{row.kind}</Link>
-                            </td>
-                            <td className = "right aligned">
-                                 <a className='ui label'>{row.count}</a>
-                            </td>
+                            <td><EntityLink kind={row.kind} /></td>
+                            <td className = "right aligned"><Label>{row.count}</Label></td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </Table>
         );
     }
 }

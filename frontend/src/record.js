@@ -95,7 +95,7 @@ const SingleLinkPane = (props) =>
 const MultiLinkPane = (props) =>
     <Segment>
         <Label ribbon color="black">{props.data.edgeKind}</Label>
-        {props.data.value &&
+        {props.data.keyz.length>0 &&
             <Table compact="very" collapsing>
                 <tbody>
                     {props.data.keyz.map(key => (
@@ -104,7 +104,7 @@ const MultiLinkPane = (props) =>
                 </tbody>
             </Table>
         }
-        {!props.data.value && <Label size="tiny"> --- </Label>}
+        {props.data.keyz.length ===0 && <Label size="tiny"> --- </Label>}
     </Segment>
 
 
