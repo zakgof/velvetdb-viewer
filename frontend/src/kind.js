@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
 import {RootLink, EntityLink, RecLink} from "./utils.js";
-import { Label, Table} from 'semantic-ui-react';
+import {Label, Table, Button} from 'semantic-ui-react';
 
 
 class KindPage extends Component {
+
+    constructor(props) {
+        super(props);
+    }
+
     componentDidMount() {
+        this.loadData(0, 50);
+    }
+
+    loadData(offset, limit) {
         var kind = this.props.match.params.kind;
-        this.props.ajax("get", "/kind/" + kind, null,
-            response => this.setState({ kind: response.data }));
+        this.props.ajax("get", "/kind/" + kind + "/" + offset + "/" + limit, null, response => this.setState({ kind: response.data }));
     }
 
     render() {
         return (
             this.state && (
                 <>
-
                     <Label.Group size="large" tag>
                         <RootLink />
                         <EntityLink kind={this.state.kind.kind} />
@@ -42,11 +49,14 @@ class KindPage extends Component {
                             ))}
                         </Table.Body>
                     </Table>
-                    
                      <p>
                         Shown records <span>{this.state.kind.offset + 1}</span> - <span>{this.state.kind.lastIndex}</span> of{" "}
                         <span>{this.state.kind.total}</span>
                     </p>
+                    
+                    {(this.state.kind.offset > 0)                           &&  <Button onClick={e => this.loadData(Math.max(0, this.state.kind.offset - 50), 50)}>Prev</Button>}
+                    {(this.state.kind.offset + 50 < this.state.kind.total)  &&  <Button onClick={e => this.loadData(this.state.kind.offset + 50, 50)}>Next</Button>}
+                    
                 </>
             )
         );
