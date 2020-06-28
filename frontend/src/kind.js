@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
 import React, { Component } from 'react';
-import RecLink, {EntityLink} from "./utils.js";
-import { Breadcrumb, Segment} from 'semantic-ui-react';
+import {RootLink, EntityLink, RecLink} from "./utils.js";
+import { Label, Table} from 'semantic-ui-react';
 
 
 class KindPage extends Component {
@@ -14,26 +13,21 @@ class KindPage extends Component {
     render() {
         return (
             this.state && (
-                <Segment>
-               
-                    
-                    <Breadcrumb size="big">
-                  <Breadcrumb.Section link><Link to="/">kinds</Link></Breadcrumb.Section>
-                  <Breadcrumb.Divider />
-                  <Breadcrumb.Section active><EntityLink kind={this.state.kind.kind} /></Breadcrumb.Section>
-                </Breadcrumb>
-                    
-           
-               
+                <>
 
-                    <table className="ui collapsing table">
-                        <thead>
+                    <Label.Group size="large" tag>
+                        <RootLink />
+                        <EntityLink kind={this.state.kind.kind} />
+                    </Label.Group>
+
+                    <Table collapsing color="teal" celled>
+                        <Table.Header>
                             <tr key="header">
-                                <th>{this.state.kind.keyField}</th>
+                                <th><i aria-hidden="true" class="key disabled icon"></i> {this.state.kind.keyField}</th>
                                 {this.state.kind.fields.filter(f => f !== this.state.kind.keyField).map(f => <th key={f}>{f}</th>)}
                             </tr>
-                        </thead>
-                        <tbody>
+                        </Table.Header>
+                        <Table.Body>
                             {this.state.kind.rows.map(row => (
                                 <tr key={row[this.state.kind.keyField].value}>
                                     <td key="the-key">
@@ -41,19 +35,19 @@ class KindPage extends Component {
                                     </td>
                                     {this.state.kind.fields.filter(f => f !== this.state.kind.keyField).map(f => (
                                         <td key={f}>
-                                            <span>{row[f].value}</span>
+                                            <span style={{fontFamily: "monospace", fontSize: "0.8em"}}>{row[f].value}</span>
                                         </td>
                                     ))}
                                 </tr>
                             ))}
-                        </tbody>
-                    </table>
+                        </Table.Body>
+                    </Table>
                     
                      <p>
                         Shown records <span>{this.state.kind.offset + 1}</span> - <span>{this.state.kind.lastIndex}</span> of{" "}
                         <span>{this.state.kind.total}</span>
                     </p>
-                </Segment>
+                </>
             )
         );
     }

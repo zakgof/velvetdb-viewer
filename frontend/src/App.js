@@ -5,6 +5,7 @@ import "./App.css";
 import KindsPage from "./landing.js";
 import KindPage from "./kind.js";
 import RecordPage from "./record.js";
+import { Container, Segment } from 'semantic-ui-react'
 
 const ajaxbase = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') ? "http://localhost:4567/api" : "/api";
 
@@ -23,13 +24,16 @@ class App extends Component {
     render() {
         return (
             <BrowserRouter>
-                <div><h5>velvetdb viewer</h5>
-                </div>
-                <Switch>
-                    <Route exact path="/" render={(props) => <KindsPage {...props} ajax={this.ajax.bind(this)}/>} />
-                    <Route exact path="/kind/:kind" render={(props) => <KindPage {...props} ajax={this.ajax.bind(this)}/>} />
-                    <Route exact path="/record/:kind/:key" render={(props) => <RecordPage {...props} ajax={this.ajax.bind(this)}/>} />
-                </Switch>
+                <Segment raised>
+                    <h4>velvetdb viewer</h4>
+                </Segment>
+                <Segment raised> 
+                    <Switch>
+                        <Route exact path="/" render={(props) => <KindsPage {...props} ajax={this.ajax.bind(this)}/>} />
+                        <Route exact path="/kind/:kind" render={(props) => <KindPage {...props} ajax={this.ajax.bind(this)}/>} />
+                        <Route exact path="/record/:kind/:key" render={(props) => <RecordPage {...props} ajax={this.ajax.bind(this)}/>} />
+                    </Switch>
+                </Segment>
             </BrowserRouter>
         );
     }

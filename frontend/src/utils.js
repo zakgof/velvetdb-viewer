@@ -1,9 +1,9 @@
 import {Link} from "react-router-dom";
 import React, { Component } from 'react';
+import {Segment, Label } from 'semantic-ui-react';
 
-export const RecLink = (props) => <Link to={"/record/" + props.kind + "/" + props.id}>{props.id}</Link>
-
-export const EntityLink = (props) => <Link to={"/kind/" + props.kind}>{props.kind}</Link>
-
-export default RecLink;
+export const RootLink = (props) => <Label as="a" color="green"><Link to="/">database</Link></Label>
+export const EntityLink = (props) => <Label as="a" color="yellow"><Link to={"/kind/" + props.kind}>{props.kind}</Link></Label>
+export const RecLink = (props) => <Label as="a" color="teal"><Link to={"/record/" + props.kind + "/" + props.id}>{props.id}</Link></Label>
+export const SEPAR = "&nbsp;&#47;&nbsp;"
 
